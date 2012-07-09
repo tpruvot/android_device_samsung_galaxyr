@@ -1,0 +1,64 @@
+on early-init
+    start ueventd
+
+on init
+    export PATH /sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin
+    export LD_LIBRARY_PATH /vendor/lib:/system/lib
+    export ANDROID_ROOT /system
+    export ANDROID_DATA /data
+    export EXTERNAL_STORAGE /sdcard
+
+    mkdir /sdcard
+    mkdir /system
+    mkdir /data
+    mkdir /cache
+    mkdir /efs
+    mkdir /tmp
+    mkdir /emmc
+
+    symlink /system/etc /etc
+
+on fs
+    mount tmpfs tmpfs /tmp mode=0755
+    mount ext4 /dev/block/mmcblk0p2 /system wait
+
+    # SEC_DMCRYPT move mounting efs befor apply_disk_policy, and set group id to system
+    mount ext4 /dev/block/mmcblk0p1 /efs nosuid nodev noatime wait 
+    chown radio system /efs
+    chmod 0771 /efs
+
+on post-fs
+    write /proc/sys/kernel/panic_on_oops 1
+    write /proc/sys/kernel/hung_task_timeout_secs 0
+    write /proc/cpu/alignment 4
+    write /proc/sys/kernel/sched_latency_ns 10000000
+    write /proc/sys/kernel/sched_wakeup_granularity_ns 2000000
+    write /proc/sys/kernel/sched_compat_yield 1
+    write /proc/sys/kernel/sched_child_runs_first 0
+
+on boot
+
+    ifup lo
+    hostname localhost
+    domainname localdomain
+
+    setprop service.adb.root 1
+
+    class_start default
+
+service ueventd /sbin/ueventd
+    critical
+
+service console /sbin/sh
+    class core
+    console
+    disabled
+    group log
+    
+on property:ro.debuggable=1
+    start console
+
+# We always start adbd, even if we are on a user build.
+service adbd /sbin/adbd recovery
+
+service recovery /sbin/recovery
