@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2010 The Android Open Source Project
+# Copyright (C) 2012 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -105,12 +105,14 @@ adb pull /system/etc/wifi/nvram_mfg.txt_murata ../../../vendor/$MANUFACTURER/$DE
 adb pull /system/etc/wifi/nvram_net.txt ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nvram_net.txt
 adb pull /system/etc/wifi/nvram_net.txt_b0 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nvram_net.txt_b0
 adb pull /system/etc/wifi/nvram_net.txt_murata ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nvram_net.txt_murata
+adb pull /system/bin/btld ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/wlandutservice ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/wpa_supplicant ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/macloader ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/mfgloader ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/etc/wifi/wl ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/etc/wifi/iwmulticall ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/btld
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/wlandutservice
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/wpa_supplicant
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/macloader
@@ -279,6 +281,7 @@ PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/macloader:system/bin/macloader \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/mfgloader:system/bin/mfgloader \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/wl:system/etc/wifi/wl \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/btld:system/bin/btld \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/iwmulticall:system/etc/wifi/iwmulticall
 
 # OMX shared libraries
