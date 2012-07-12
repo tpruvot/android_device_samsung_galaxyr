@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ifeq ($(PRODUCT_NAME),cyanogen_galaxyr)
+ifeq ($(TARGET_BOOTLOADER_BOARD_NAME),n1)
 
 LOCAL_PATH := $(call my-dir)
 include $(call all-makefiles-under,$(LOCAL_PATH))
