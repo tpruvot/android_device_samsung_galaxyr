@@ -65,6 +65,8 @@ PRODUCT_PACKAGES += \
     gralloc.tegra \
     overlay.tegra
 
+PRODUCT_PACKAGES += RomUpdater DroidSSHd
+
 # Set true if you want .odex files
 DISABLE_DEXPREOPT := false
 
@@ -78,7 +80,8 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/prebuilt/dhd.ko:root/lib/modules/dhd.ko \
     device/samsung/galaxyr/prebuilt/bthid.ko:root/lib/modules/bthid.ko \
     device/samsung/galaxyr/prebuilt/scsi_wait_scan.ko:root/lib/modules/scsi_wait_scan.ko \
-    device/samsung/galaxyr/prebuilt/Si4709_driver.ko:root/lib/modules/Si4709_driver.ko
+    device/samsung/galaxyr/prebuilt/Si4709_driver.ko:root/lib/modules/Si4709_driver.ko \
+    device/samsung/galaxyr/prebuilt/modules.dep:root/lib/modules/modules.dep
 
 # Vold and Storage
 PRODUCT_COPY_FILES += \
@@ -146,8 +149,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:system/etc/permissions/android.software.live_wallpaper.xml
 
-# Pick up overlay for features that depend on non-open-source files
-#DEVICE_PACKAGE_OVERLAYS := vendor/samsung/galaxyr/overlay
+# Overlay to set device specific parameters
+DEVICE_PACKAGE_OVERLAYS := device/samsung/galaxyr/overlay
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.ril.enable.3g.prefix=1 \
