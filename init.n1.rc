@@ -366,7 +366,7 @@ on property:sys.boot_completed=1
     write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 1000000
     write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpufreq/interactive/go_maxspeed_load 80
-	
+
 # adbd is controlled by the persist.service.adb.enable system property
 service adbd /sbin/adbd
 
@@ -375,6 +375,11 @@ service bt_dut_cmd /system/bin/bcm_dut
     group bluetooth net_bt_admin
     disabled
     oneshot
+
+service akmd2 /system/bin/akmd2
+    class post-zygote_services
+    user compass
+    group compass misc input
 
 on property:encryption.bootmode=remount
 
