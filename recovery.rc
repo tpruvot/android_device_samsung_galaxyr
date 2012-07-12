@@ -44,6 +44,8 @@ on boot
 
     setprop service.adb.root 1
 
+    write /sys/class/leds/button-backlight/brightness 127
+
     class_start default
 
 service ueventd /sbin/ueventd

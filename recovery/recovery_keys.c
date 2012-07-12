@@ -59,6 +59,7 @@ int device_handle_key(int key_code, int visible) {
             case KEY_VOLUMEUP:
                 return HIGHLIGHT_UP;
             case KEY_HOMEPAGE:
+            case KEY_HOME:
                 if (ui_get_showing_back_button()) {
                     return SELECT_ITEM;
                 }
