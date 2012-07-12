@@ -19,9 +19,8 @@
 DEVICE=galaxyr
 MANUFACTURER=samsung
 
-mkdir -p ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/{,lib/hw,lib/egl,firmware}
-
 # HAL
+mkdir -p ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw
 adb pull /system/lib/hw/gralloc.tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
 adb pull /system/lib/hw/overlay.tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
 adb pull /system/lib/hw/sensors.tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
@@ -36,11 +35,10 @@ adb pull /system/lib/egl/libGLESv1_CM_tegra.so ../../../vendor/$MANUFACTURER/$DE
 adb pull /system/lib/egl/libGLESv2_tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/egl/
 
 # RIL files
+adb pull /system/bin/rild ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libril.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libsecril-client.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libsec-ril.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
-adb pull /system/bin/rild ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
-chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/rild
 
 # Camera
 adb pull /system/lib/libActionShot.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
