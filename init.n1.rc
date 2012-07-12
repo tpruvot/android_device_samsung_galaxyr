@@ -39,11 +39,16 @@ on fs
     setprop audioflinger.bootsnd 1
     
 on boot
-    mkdir /data/misc/wifi 0770 wifi system
-    mkdir /data/misc/wifi/sockets 0770 wifi wifi
-    mkdir /data/misc/dhcp 0770 dhcp dhcp
+    mkdir /data/misc/wifi 0771 wifi system
+    mkdir /data/misc/wifi/sockets 0771 wifi wifi
+    chmod 0771 /data/misc/wifi
+
+    mkdir /data/misc/dhcp 0771 dhcp dhcp
     chown dhcp dhcp /data/misc/dhcp
-    mkdir /data/wifi 0770 wifi wifi
+    mkdir /data/misc/dhcpcd 0771 dhcp dhcp
+    chown dhcp dhcp /data/misc/dhcpcd
+
+    setprop wifi.interface eth0
 
     setprop service.adb.root 1
 
@@ -260,7 +265,7 @@ service immvibed /system/bin/immvibed_n1
 # +++++++++++++++++++++++++++++++++++++++++++
 
 service wpa_supplicant /system/bin/wpa_supplicant \
-    -Dwext -ieth0 -c/data/wifi/bcm_supp.conf
+    -D wext -i eth0 -c /data/misc/wifi/wpa_supplicant.conf
 #   we will start as root and wpa_supplicant will switch to user wifi
 #   after setting up the capabilities required for WEXT
 #   user wifi
@@ -285,7 +290,8 @@ service macloader /system/bin/macloader
     oneshot
 # end of wifi
 
-service dhcpcd /system/bin/dhcpcd
+service dhcpcd_eth0 /system/bin/dhcpcd -ABKL -d eth0
+    group dhcp
     disabled
     oneshot
 
