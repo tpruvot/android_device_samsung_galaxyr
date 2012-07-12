@@ -30,6 +30,7 @@ adb pull /system/lib/hw/gps.GT-I9103.so ../../../vendor/$MANUFACTURER/$DEVICE/pr
 adb pull /system/lib/hw/lights.n1.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
 
 # EGL
+adb pull /system/lib/egl ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/egl
 adb pull /system/lib/egl/libEGL_tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/egl/
 adb pull /system/lib/egl/libGLESv1_CM_tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/egl/
 adb pull /system/lib/egl/libGLESv2_tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/egl/
@@ -141,6 +142,7 @@ adb pull /system/lib/libnvdispmgr_d.so ../../../vendor/$MANUFACTURER/$DEVICE/pro
 adb pull /system/lib/libcgdrv.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 
 # Firmwares
+adb pull /system/etc/firmware ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware
 adb pull /system/etc/firmware/nvddk_audiofx_core.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
 adb pull /system/etc/firmware/nvddk_audiofx_transport.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
 adb pull /system/etc/firmware/nvmm_aacdec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
