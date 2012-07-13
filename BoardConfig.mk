@@ -117,6 +117,9 @@ WIFI_DRIVER_MODULE_ARG      := "firmware_path=/system/etc/wifi/bcm4330_sta.bin n
 TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT := ./device/samsung/galaxyr/releasetools/galaxyr_ota_from_target_files
 TARGET_RELEASETOOL_IMG_FROM_TARGET_SCRIPT := ./device/samsung/galaxyr/releasetools/galaxyr_img_from_target_files
 
+# Custom squisher, final step script
+TARGET_CUSTOM_RELEASETOOL := ./device/samsung/galaxyr/releasetools/squisher
+
 # Assert
 TARGET_OTA_ASSERT_DEVICE := galaxyr,GT-I9103
 
