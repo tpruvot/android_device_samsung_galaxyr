@@ -47,6 +47,9 @@ on post-fs
     export HISTFILE /data/local/tmp/.ash_history
     export HISTFILESIZE 1000
 
+    symlink /sbin/sh /system/xbin/ash
+    export ENV /etc/profile
+
 on boot
 
     mkdir /data/misc/wifi 0771 wifi system
@@ -62,6 +65,8 @@ on boot
 
     setprop service.adb.root 1
 
+    # required to start the ril
+    chown radio radio /sys/devices/platform/tegra-ehci.1/ehci_power
 
     # create data/gps for GPS demon
     chmod 0660 /dev/ttyHS0
@@ -80,15 +85,20 @@ on boot
     chown radio system /sys/module/tegra2_emc/parameters/emc_enable
     chmod 0660 /sys/module/tegra2_emc/parameters/emc_enable
 
-    chown root system /dev/mpu
-    chown root system /dev/mpuirq
-    chown root system /dev/accelirq
-    chown root system /dev/timerirq
+    chown compass system /dev/mpu
+    chown compass system /dev/mpuirq
+    chown compass system /dev/accelirq
+    chown compass system /dev/timerirq
+
+    # This allow to enable the mpu sensor hal
+    chown system input /sys/class/input/input0/enable
+
     chown root system /sys/class/proximity/proximity/proximity_avg
 
-    chmod 0660 /dev/mpu
+    chmod 0666 /dev/mpu
     chmod 0660 /dev/mpuirq
     chmod 0660 /dev/accelirq
+    chmod 0660 /dev/compassirq
     chmod 0660 /dev/timerirq
 
     # bluetooth #############################################
@@ -110,7 +120,7 @@ on boot
 
     # bluetooth MAC address programming
     setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
-    chown bluetooth bluetooth ro.bt.bdaddr_path
+    chown bluetooth bluetooth /efs/bluetooth/bt_addr
 
     # UART/USB path switching
     chown system radio /sys/devices/platform/i2c-gpio.11/i2c-11/11-0025/uartsel

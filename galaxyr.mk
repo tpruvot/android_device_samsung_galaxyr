@@ -99,7 +99,11 @@ PRODUCT_COPY_FILES += \
 
 # Media
 PRODUCT_COPY_FILES += \
-	device/samsung/galaxyr/configs/media_profiles.xml:system/etc/media_profiles.xml
+    device/samsung/galaxyr/configs/media_profiles.xml:system/etc/media_profiles.xml \
+
+# Shell and busybox
+PRODUCT_COPY_FILES += \
+    device/samsung/galaxyr/configs/profile:system/etc/profile \
 
 # Keylayout
 PRODUCT_COPY_FILES += \
