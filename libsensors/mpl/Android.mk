@@ -11,37 +11,36 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# Modified 2011 by InvenSense, Inc
 
 
 LOCAL_PATH := $(call my-dir)
 
-ifneq ($(TARGET_SIMULATOR),true)
-
-# HAL module implemenation, not prelinked, and stored in
-# hw/<SENSORS_HARDWARE_MODULE_ID>.<ro.product.board>.so
+# InvenSense fragment of the HAL
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := sensors.n1
-
-LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw
+LOCAL_MODULE := libinvensense_hal
 
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_CFLAGS := -DLOG_TAG=\"Sensors\"
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/mpl
-LOCAL_SRC_FILES := \
-	sensors.cpp \
-	SensorBase.cpp \
-	LightSensor.cpp \
-	ProximitySensor.cpp \
-	InputEventReader.cpp \
-	AkmSensor.cpp \
+LOCAL_CFLAGS += -DCONFIG_MPU_SENSORS_MPU3050=1
 
-LOCAL_SHARED_LIBRARIES := libinvensense_hal liblog libcutils libdl
+LOCAL_SRC_FILES := SensorBase.cpp MPLSensor.cpp 
+
+mlsdk := $(LOCAL_PATH)/../mlsdk
+
+LOCAL_C_INCLUDES += $(mlsdk)/platform/include
+LOCAL_C_INCLUDES += $(mlsdk)/platform/include/linux
+LOCAL_C_INCLUDES += $(mlsdk)/platform/linux
+LOCAL_C_INCLUDES += $(mlsdk)/mllite
+LOCAL_C_INCLUDES += $(mlsdk)/mldmp
+LOCAL_C_INCLUDES += $(mlsdk)/external/aichi
+LOCAL_C_INCLUDES += $(mlsdk)/external/akmd
+
+LOCAL_SHARED_LIBRARIES := liblog libcutils libutils libdl libmllite libmlplatform
+LOCAL_CPPFLAGS+=-DLINUX=1
+LOCAL_LDFLAGS:=-rdynamic
 LOCAL_PRELINK_MODULE := false
 
 include $(BUILD_SHARED_LIBRARY)
-
-include $(call all-makefiles-under,$(LOCAL_PATH))
-
-endif # !TARGET_SIMULATOR

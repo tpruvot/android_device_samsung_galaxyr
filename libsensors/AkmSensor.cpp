@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#define LOG_NDEBUG 0
+
 #include <fcntl.h>
 #include <errno.h>
 #include <math.h>
@@ -23,12 +25,10 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 
-#include "ak8973b.h"
+//#include "akm8975.h"
 
 #include <cutils/log.h>
 #include "AkmSensor.h"
-
-//#define LOG_NDEBUG 0
 
 /*****************************************************************************/
 
@@ -259,6 +259,7 @@ void AkmSensor::processEvent(int code, int value)
 {
     switch (code) {
         case EVENT_TYPE_ACCEL_X:
+            LOGV("AkmSensor: EVENT_TYPE_ACCEL_X value =%d", value);
             mPendingMask |= 1<<Accelerometer;
             mPendingEvents[Accelerometer].acceleration.x = value * CONVERT_A_X;
             break;
@@ -277,17 +278,18 @@ void AkmSensor::processEvent(int code, int value)
             mPendingEvents[MagneticField].magnetic.x = value * CONVERT_M_X;
             break;
         case EVENT_TYPE_MAGV_Y:
-            LOGV("AkmSensor: EVENT_TYPE_MAGV_Y value =%d", value);
+            //LOGV("AkmSensor: EVENT_TYPE_MAGV_Y value =%d", value);
             mPendingMask |= 1<<MagneticField;
             mPendingEvents[MagneticField].magnetic.y = value * CONVERT_M_Y;
             break;
         case EVENT_TYPE_MAGV_Z:
-            LOGV("AkmSensor: EVENT_TYPE_MAGV_Z value =%d", value);
+            //LOGV("AkmSensor: EVENT_TYPE_MAGV_Z value =%d", value);
             mPendingMask |= 1<<MagneticField;
             mPendingEvents[MagneticField].magnetic.z = value * CONVERT_M_Z;
             break;
 
         case EVENT_TYPE_YAW:
+            LOGV("AkmSensor: EVENT_TYPE_YAW value =%d", value);
             mPendingMask |= 1<<Orientation;
             mPendingEvents[Orientation].orientation.azimuth = value * CONVERT_O_A;
             break;
@@ -300,11 +302,14 @@ void AkmSensor::processEvent(int code, int value)
             mPendingEvents[Orientation].orientation.roll = value * CONVERT_O_R;
             break;
         case EVENT_TYPE_ORIENT_STATUS:
-            uint8_t status = uint8_t(value & SENSOR_STATE_MASK);
+        {   uint8_t status = uint8_t(value & SENSOR_STATE_MASK);
             if (status == 4)
                 status = 0;
             mPendingMask |= 1<<Orientation;
             mPendingEvents[Orientation].orientation.status = status;
             break;
+        }
+        default:
+            LOGW("AkmSensor: Unknown event code=0x%x (value=%d)", code, value);
     }
 }

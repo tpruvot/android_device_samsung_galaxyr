@@ -32,10 +32,11 @@
 
 #include "sensors.h"
 
+#include "MPLSensor.h"
+
 #include "LightSensor.h"
 #include "ProximitySensor.h"
 #include "AkmSensor.h"
-#include "GyroSensor.h"
 
 /*****************************************************************************/
 
@@ -50,34 +51,39 @@
 #define SENSORS_LIGHT            (1<<ID_L)
 #define SENSORS_PROXIMITY        (1<<ID_P)
 #define SENSORS_GYROSCOPE        (1<<ID_GY)
+#define SENSORS_GRAVITY          (1<<ID_GR)
+#define SENSORS_LINEAR_ACCEL     (1<<ID_LA)
+#define SENSORS_ROTATION_VECTOR  (1<<ID_RV)
 
-#define SENSORS_ACCELERATION_HANDLE     0
-#define SENSORS_MAGNETIC_FIELD_HANDLE   1
-#define SENSORS_ORIENTATION_HANDLE      2
-#define SENSORS_LIGHT_HANDLE            3
-#define SENSORS_PROXIMITY_HANDLE        4
-#define SENSORS_GYROSCOPE_HANDLE        5
+#define SENSORS_ACCELERATION_HANDLE     (ID_A)
+#define SENSORS_MAGNETIC_FIELD_HANDLE   (ID_M)
+#define SENSORS_ORIENTATION_HANDLE      (ID_O)
+#define SENSORS_LIGHT_HANDLE            (ID_L)
+#define SENSORS_PROXIMITY_HANDLE        (ID_P)
+#define SENSORS_GYROSCOPE_HANDLE        (ID_GY)
+#define SENSORS_GRAVITY_HANDLE          (ID_GR)
+#define SENSORS_LINEAR_ACCEL_HANDLE     (ID_LA)
+#define SENSORS_ROTATION_VECTOR_HANDLE  (ID_RV)
 
 #define AKM_FTRACE 0
 #define AKM_DEBUG 0
 #define AKM_DATA 0
 
+// akm 8975 is handled by mpl too
+#define AKM_RAW 1
+
 /*****************************************************************************/
 
+#define LOCAL_SENSORS (2 + AKM_RAW)
+
 /* The SENSORS Module */
-static const struct sensor_t sSensorList[] = {
-        { "KR3DM 3-axis Accelerometer",
-          "STMicroelectronics",
-          1, SENSORS_ACCELERATION_HANDLE,
-          SENSOR_TYPE_ACCELEROMETER, RANGE_A, CONVERT_A, 0.23f, 20000, { } },
+static struct sensor_t sSensorList[LOCAL_SENSORS + MPLSensor::numSensors] = {
+#if AKM_RAW
         { "AK8975 3-axis Magnetic field sensor",
           "Asahi Kasei Microdevices",
           1, SENSORS_MAGNETIC_FIELD_HANDLE,
           SENSOR_TYPE_MAGNETIC_FIELD, 2000.0f, CONVERT_M, 6.8f, 16667, { } },
-        { "AK8973 Orientation sensor",
-          "Asahi Kasei Microdevices",
-          1, SENSORS_ORIENTATION_HANDLE,
-          SENSOR_TYPE_ORIENTATION, 360.0f, CONVERT_O, 7.8f, 16667, { } },
+#endif
         { "CM3663 Light sensor",
           "Capella Microsystems",
           1, SENSORS_LIGHT_HANDLE,
@@ -86,12 +92,8 @@ static const struct sensor_t sSensorList[] = {
           "Capella Microsystems",
           1, SENSORS_PROXIMITY_HANDLE,
           SENSOR_TYPE_PROXIMITY, 5.0f, 5.0f, 0.75f, 0, { } },
-        { "K3G Gyroscope sensor",
-          "STMicroelectronics",
-          1, SENSORS_GYROSCOPE_HANDLE,
-          SENSOR_TYPE_GYROSCOPE, RANGE_GYRO, CONVERT_GYRO, 6.1f, 1190, { } },
 };
-
+static int numSensors = LOCAL_SENSORS;
 
 static int open_sensors(const struct hw_module_t* module, const char* id,
                         struct hw_device_t** device);
@@ -101,7 +103,7 @@ static int sensors__get_sensors_list(struct sensors_module_t* module,
                                      struct sensor_t const** list) 
 {
         *list = sSensorList;
-        return ARRAY_SIZE(sSensorList);
+        return numSensors;
 }
 
 static struct hw_module_methods_t sensors_module_methods = {
@@ -132,11 +134,16 @@ struct sensors_poll_context_t {
 
 private:
     enum {
-        light           = 0,
-        proximity       = 1,
-        akm             = 2,
-        gyro            = 3,
-        numSensorDrivers,
+        mpl = 0,          //all mpl entries must be consecutive and in this order
+        mpl_accel,
+        mpl_timer,
+        light,
+        proximity,
+#if AKM_RAW
+        akm,
+#endif
+        numSensorDrivers, // wake pipe goes here
+        mpl_power,        // special handle for MPL pm interaction
         numFds,
     };
 
@@ -148,16 +155,25 @@ private:
 
     int handleToDriver(int handle) const {
         switch (handle) {
+            case ID_RV:
+            case ID_LA:
+            case ID_GR:
+            case ID_GY:
             case ID_A:
-            case ID_M:
             case ID_O:
+                return mpl;
+            case ID_M:
+#if AKM_RAW
                 return akm;
+#else
+                return mpl;
+#endif
             case ID_P:
                 return proximity;
             case ID_L:
                 return light;
-            case ID_GY:
-                return gyro;
+            default:
+                LOGW(LOG_TAG ": unknown sensor handle %d", handle);
         }
         return -EINVAL;
     }
@@ -167,6 +183,29 @@ private:
 
 sensors_poll_context_t::sensors_poll_context_t()
 {
+    MPLSensor* p_mplsen = new MPLSensor();
+    setCallbackObject(p_mplsen); //setup the callback object for handing mpl callbacks
+
+    numSensors = LOCAL_SENSORS;
+
+    numSensors += p_mplsen->populateSensorList(sSensorList + LOCAL_SENSORS,
+        sizeof(sSensorList[0]) * (ARRAY_SIZE(sSensorList) - LOCAL_SENSORS));
+
+    mSensors[mpl] = p_mplsen;
+    mPollFds[mpl].fd = mSensors[mpl]->getFd();
+    mPollFds[mpl].events = POLLIN;
+    mPollFds[mpl].revents = 0;
+
+    mSensors[mpl_accel] = mSensors[mpl];
+    mPollFds[mpl_accel].fd = ((MPLSensor*)mSensors[mpl])->getAccelFd();
+    mPollFds[mpl_accel].events = POLLIN;
+    mPollFds[mpl_accel].revents = 0;
+
+    mSensors[mpl_timer] = mSensors[mpl];
+    mPollFds[mpl_timer].fd = ((MPLSensor*)mSensors[mpl])->getTimerFd();
+    mPollFds[mpl_timer].events = POLLIN;
+    mPollFds[mpl_timer].revents = 0;
+
     mSensors[light] = new LightSensor();
     mPollFds[light].fd = mSensors[light]->getFd();
     mPollFds[light].events = POLLIN;
@@ -177,15 +216,12 @@ sensors_poll_context_t::sensors_poll_context_t()
     mPollFds[proximity].events = POLLIN;
     mPollFds[proximity].revents = 0;
 
+#if AKM_RAW
     mSensors[akm] = new AkmSensor();
     mPollFds[akm].fd = mSensors[akm]->getFd();
     mPollFds[akm].events = POLLIN;
     mPollFds[akm].revents = 0;
-
-    mSensors[gyro] = new GyroSensor();
-    mPollFds[gyro].fd = mSensors[gyro]->getFd();
-    mPollFds[gyro].events = POLLIN;
-    mPollFds[gyro].revents = 0;
+#endif
 
     int wakeFds[2];
     int result = pipe(wakeFds);
@@ -197,6 +233,11 @@ sensors_poll_context_t::sensors_poll_context_t()
     mPollFds[wake].fd = wakeFds[0];
     mPollFds[wake].events = POLLIN;
     mPollFds[wake].revents = 0;
+
+    //setup MPL pm interaction handle
+    mPollFds[mpl_power].fd = ((MPLSensor*)mSensors[mpl])->getPowerFd();
+    mPollFds[mpl_power].events = POLLIN;
+    mPollFds[mpl_power].revents = 0;
 }
 
 sensors_poll_context_t::~sensors_poll_context_t() {
@@ -244,6 +285,17 @@ int sensors_poll_context_t::pollEvents(sensors_event_t* data, int count)
                 count -= nb;
                 nbEvents += nb;
                 data += nb;
+
+                //special handling for the mpl, which has multiple handles
+                if (i == mpl) {
+                    i += 2; //skip accel and timer
+                    mPollFds[mpl_accel].revents = 0;
+                    mPollFds[mpl_timer].revents = 0;
+                }
+                if (i == mpl_accel) {
+                    i += 1; //skip timer
+                    mPollFds[mpl_timer].revents = 0;
+                }
             }
         }
 
@@ -262,6 +314,10 @@ int sensors_poll_context_t::pollEvents(sensors_event_t* data, int count)
                 LOGE_IF(result<0, "error reading from wake pipe (%s)", strerror(errno));
                 LOGE_IF(msg != WAKE_MESSAGE, "unknown message on wake queue (0x%02x)", int(msg));
                 mPollFds[wake].revents = 0;
+            }
+            if (mPollFds[mpl_power].revents & POLLIN) {
+                ((MPLSensor*)mSensors[mpl])->handlePowerEvent();
+                mPollFds[mpl_power].revents = 0;
             }
         }
         // if we have events and space, go read them

@@ -33,12 +33,18 @@ __BEGIN_DECLS
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
-#define ID_A  (0)
-#define ID_M  (1)
-#define ID_O  (2)
-#define ID_L  (3)
-#define ID_P  (4)
-#define ID_GY (5)
+#define ID_SAMSUNG_BASE (7)
+#define ID_L  (ID_SAMSUNG_BASE)
+#define ID_P  (ID_L + 1)
+
+#define ID_GY (0)
+#define ID_A  (ID_GY + 1)
+#define ID_M  (ID_A + 1)
+#define ID_O  (ID_M + 1)
+#define ID_RV (ID_O + 1)
+#define ID_LA (ID_RV + 1)
+#define ID_GR (ID_LA + 1)
+
 
 /*****************************************************************************/
 
