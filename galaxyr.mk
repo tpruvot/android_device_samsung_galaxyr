@@ -108,6 +108,7 @@ PRODUCT_COPY_FILES += \
 # Shell and busybox
 PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/configs/profile:system/etc/profile \
+    device/samsung/galaxyr/configs/busybox.fstab:system/etc/fstab \
 
 # Keylayout
 PRODUCT_COPY_FILES += \
