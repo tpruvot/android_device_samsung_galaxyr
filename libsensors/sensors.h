@@ -33,12 +33,26 @@ __BEGIN_DECLS
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
+#ifndef SENSOR_TYPE_AMBIENT_TEMPERATURE
+#define SENSOR_TYPE_AMBIENT_TEMPERATURE SENSOR_TYPE_TEMPERATURE
+#endif
+
+#define ID_L  (SENSOR_TYPE_LIGHT)
+#define ID_P  (SENSOR_TYPE_PROXIMITY)
+#define ID_A  (SENSOR_TYPE_ACCELEROMETER)
+#define ID_M  (SENSOR_TYPE_MAGNETIC_FIELD)
+#define ID_O  (SENSOR_TYPE_ORIENTATION)
+#define ID_GY (SENSOR_TYPE_GYROSCOPE)
+#define ID_T  (SENSOR_TYPE_AMBIENT_TEMPERATURE)
+
+#if 0
 #define ID_A  (0)
 #define ID_M  (1)
 #define ID_O  (2)
 #define ID_L  (3)
 #define ID_P  (4)
 #define ID_GY (5)
+#endif
 
 /*****************************************************************************/
 
@@ -115,6 +129,34 @@ __BEGIN_DECLS
 #define CONVERT_A_X                 (CONVERT_A)
 #define CONVERT_A_Y                 (-CONVERT_A)
 #define CONVERT_A_Z                 (-CONVERT_A)
+
+// factory kxtf9 (not mpu)
+#define KXTF9_LSG                   (1000.0f)
+#define KXTF9_CONVERT_A             (GRAVITY_EARTH / KXTF9_LSG)
+#define KXTF9_CONVERT_A_X           (KXTF9_CONVERT_A)
+#define KXTF9_CONVERT_A_Y           (-KXTF9_CONVERT_A)
+#define KXTF9_CONVERT_A_Z           (-KXTF9_CONVERT_A)
+
+// factory ak8975
+#define AK8975_DEFAULT_DELAY               (200 * 1000000)
+
+#define AK8975_LSG                         (1000.0f)
+#define AK8975_CONVERT_A                   (GRAVITY_EARTH / AK8975_LSG)
+#define AK8975_CONVERT_A_X                 (-AK8975_CONVERT_A)
+#define AK8975_CONVERT_A_Y                 (AK8975_CONVERT_A)
+#define AK8975_CONVERT_A_Z                 (-AK8975_CONVERT_A)
+
+#define AK8975_CONVERT_M                   (1.0f/16.0f)
+#define AK8975_CONVERT_M_X                 (AK8975_CONVERT_M)
+#define AK8975_CONVERT_M_Y                 (-AK8975_CONVERT_M)
+#define AK8975_CONVERT_M_Z                 (-AK8975_CONVERT_M)
+
+#define AK8975_CONVERT_O                   (1.0f/64.0f)
+#define AK8975_CONVERT_O_A                 (AK8975_CONVERT_O)
+#define AK8975_CONVERT_O_P                 (AK8975_CONVERT_O)
+#define AK8975_CONVERT_O_R                 (-AK8975_CONVERT_O)
+
+#define AK8975_SENSOR_STATE_MASK           (0x3)
 
 // conversion of magnetic data to uT units
 #define CONVERT_M                   (1.0f/16.0f)

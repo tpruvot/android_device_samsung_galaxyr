@@ -32,13 +32,14 @@
 /dev/bthid      0660    bluetooth input
 
 # Sensors
-/dev/mpu	0666	compass system
-/dev/mpuirq	0666	compass system
-/dev/accelirq   0666    compass system
+/dev/mpu	0660	compass system
+/dev/mpuirq	0660	compass system
+/dev/accelirq   0660    compass system
 /dev/compassirq 0660    compass system
-/dev/timerirq   0666    compass system
-/dev/akm8975    0666    compass system
-/dev/kxtf9      0666    compass system
+/dev/timerirq   0660    compass system
+/dev/kxtf9      0660    compass system
+/dev/akm897*    0664    compass system
+
 
 /dev/ttyGS0     0660    radio   radio
 /dev/ttyHS0     0660    radio   radio

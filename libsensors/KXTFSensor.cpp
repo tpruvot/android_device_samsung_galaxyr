@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 
 #include <fcntl.h>
 #include <errno.h>
@@ -25,22 +25,25 @@
 #include <sys/select.h>
 #include <cutils/log.h>
 
-#include "GyroSensor.h"
+#include "sensors.h"
+
+#include "KXTFSensor.h"
 
 #define FETCH_FULL_EVENT_BEFORE_RETURN 1
 #define IGNORE_EVENT_TIME 350000000
+
 /*****************************************************************************/
 
-GyroSensor::GyroSensor()
-    : SensorBase(NULL, "mpu-accel"),
+KXTFSensor::KXTFSensor()
+    : SensorBase(NULL, "accelerometer_sensor"),
       mEnabled(0),
       mInputReader(4),
       mHasPendingEvent(false),
       mEnabledTime(0)
 {
     mPendingEvent.version = sizeof(sensors_event_t);
-    mPendingEvent.sensor = ID_GY;
-    mPendingEvent.type = SENSOR_TYPE_GYROSCOPE;
+    mPendingEvent.sensor = ID_A;
+    mPendingEvent.type = SENSOR_TYPE_ACCELEROMETER;
     memset(mPendingEvent.data, 0, sizeof(mPendingEvent.data));
 
     if (data_fd) {
@@ -52,32 +55,64 @@ GyroSensor::GyroSensor()
     }
 }
 
-GyroSensor::~GyroSensor() {
+KXTFSensor::~KXTFSensor() {
     if (mEnabled) {
         enable(0, 0);
     }
 }
 
-int GyroSensor::setInitialState() {
+int KXTFSensor::setInitialState() {
     struct input_absinfo absinfo_x;
     struct input_absinfo absinfo_y;
     struct input_absinfo absinfo_z;
     float value;
-    if (!ioctl(data_fd, EVIOCGABS(EVENT_TYPE_GYRO_X), &absinfo_x) &&
-        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_GYRO_X), &absinfo_y) &&
-        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_GYRO_X), &absinfo_z)) {
+
+    FILE *fd = fopen("/sys/devices/virtual/sec/sec_kxtf9/kxtf9_rawdata", "r");
+    if (fd != NULL) {
+        char buf[24] = "";
+
+        fgets(&buf[0], sizeof(buf), fd);
+        fclose(fd);
+
+        int nr = sscanf(buf, "%d, %d, %d", 
+            &absinfo_x.value, &absinfo_y.value, &absinfo_z.value);
+
+        if (nr >= 0) {
+            value = absinfo_x.value;
+            mPendingEvent.data[1] = value * CONVERT_A_Y;
+            value = absinfo_y.value;
+            mPendingEvent.data[0] = value * CONVERT_A_X;
+            value = absinfo_z.value;
+            mPendingEvent.data[2] = value * CONVERT_A_Z;
+            mHasPendingEvent = true;
+        }
+    }
+/*
+    cat /sys/devices/virtual/sec/sec_kxtf9/kxtf9_rawdata
+    12, -298, -979
+
+    if (!ioctl(data_fd, EVIOCGABS(EVENT_TYPE_ACCEL_X), &absinfo_x) &&
+        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_ACCEL_Y), &absinfo_y) &&
+        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_ACCEL_Z), &absinfo_z)) {
         value = absinfo_x.value;
-        mPendingEvent.data[0] = value * CONVERT_GYRO_X;
+        mPendingEvent.data[0] = value * CONVERT_A_X;
         value = absinfo_x.value;
-        mPendingEvent.data[1] = value * CONVERT_GYRO_Y;
+        mPendingEvent.data[1] = value * CONVERT_A_Y;
         value = absinfo_x.value;
-        mPendingEvent.data[2] = value * CONVERT_GYRO_Z;
+        mPendingEvent.data[2] = value * CONVERT_A_Z;
         mHasPendingEvent = true;
     }
+*/
+    if (mHasPendingEvent) {
+        LOGD(LOG_TAG "[KXTF9] %s: %d %d %d -> %f %f %f", __FUNCTION__,
+                absinfo_x.value, absinfo_y.value, absinfo_z.value,
+                mPendingEvent.data[0], mPendingEvent.data[1], mPendingEvent.data[2]);
+    }
+
     return 0;
 }
 
-int GyroSensor::enable(int32_t, int en) {
+int KXTFSensor::enable(int32_t, int en) {
     int flags = en ? 1 : 0;
     if (flags != mEnabled) {
         int fd;
@@ -107,11 +142,11 @@ int GyroSensor::enable(int32_t, int en) {
     return 0;
 }
 
-bool GyroSensor::hasPendingEvents() const {
+bool KXTFSensor::hasPendingEvents() const {
     return mHasPendingEvent;
 }
 
-int GyroSensor::setDelay(int32_t handle, int64_t delay_ns)
+int KXTFSensor::setDelay(int32_t handle, int64_t delay_ns)
 {
     int fd;
     strcpy(&input_sysfs_path[input_sysfs_path_len], "poll_delay");
@@ -126,7 +161,7 @@ int GyroSensor::setDelay(int32_t handle, int64_t delay_ns)
     return -1;
 }
 
-int GyroSensor::readEvents(sensors_event_t* data, int count)
+int KXTFSensor::readEvents(sensors_event_t* data, int count)
 {
     if (count < 1)
         return -EINVAL;
@@ -152,12 +187,15 @@ again:
         int type = event->type;
         if (type == EV_REL) {
             float value = event->value;
-            if (event->code == EVENT_TYPE_GYRO_X) {
-                mPendingEvent.data[0] = value * CONVERT_GYRO_X;
-            } else if (event->code == EVENT_TYPE_GYRO_Y) {
-                mPendingEvent.data[1] = value * CONVERT_GYRO_Y;
-            } else if (event->code == EVENT_TYPE_GYRO_Z) {
-                mPendingEvent.data[2] = value * CONVERT_GYRO_Z;
+            if (event->code == EVENT_TYPE_ACCEL_X) {
+                mPendingEvent.data[1] = value * KXTF9_CONVERT_A_Y; /* X/Y inversed */
+                // mPendingEvent.acceleration.y = mPendingEvent.data[1];
+            } else if (event->code == EVENT_TYPE_ACCEL_Y) {
+                mPendingEvent.data[0] = value * KXTF9_CONVERT_A_X;
+                // mPendingEvent.acceleration.x = mPendingEvent.data[0];
+            } else if (event->code == EVENT_TYPE_ACCEL_Z) {
+                mPendingEvent.data[2] = value * KXTF9_CONVERT_A_Z;
+                // mPendingEvent.acceleration.z = mPendingEvent.data[3];
             }
         } else if (type == EV_SYN) {
             mPendingEvent.timestamp = timevalToNano(event->time);
@@ -169,8 +207,8 @@ again:
                 count--;
             }
         } else {
-            LOGE("GyroSensor: unknown event (type=%d, code=%d)",
-                    type, event->code);
+            LOGE(LOG_TAG "[KXTF9] %s: unknown event (type=%d, code=%d)",
+                    __FUNCTION__, type, event->code);
         }
         mInputReader.next();
     }
@@ -184,6 +222,12 @@ again:
             goto again;
     }
 #endif
+
+    if (mHasPendingEvent) {
+        LOGV(LOG_TAG "[KXTF9] %s: %d %d %d -> %f %f %f", __FUNCTION__,
+                absinfo_x.value, absinfo_y.value, absinfo_z.value,
+                mPendingEvent.data[0], mPendingEvent.data[1], mPendingEvent.data[2]);
+    }
 
     return numEventReceived;
 }
