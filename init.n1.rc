@@ -47,7 +47,8 @@ on post-fs
     export HISTFILE /data/local/tmp/.ash_history
     export HISTFILESIZE 1000
 
-    symlink /sbin/sh /system/xbin/ash
+    mount rootfs rootfs / rw remount
+    symlink /system/xbin/ash /sbin/sh
     export ENV /etc/profile
 
 on boot
@@ -273,6 +274,9 @@ on boot
     # for datarouter
     chown system system /dev/ttyGS0
     chown system system /dev/dun
+
+    # relock the rootfs
+    mount rootfs rootfs / ro remount
 
 ##############################################################################
 # SERVICES

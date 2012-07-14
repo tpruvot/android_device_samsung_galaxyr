@@ -61,6 +61,7 @@ TARGET_NO_RADIOIMAGE := true
 
 # RIL
 BOARD_USES_LIBSECRIL_STUB := true
+BOARD_MOBILEDATA_INTERFACE_NAME := "pdp0"
 
 # Audio
 BOARD_USES_GENERIC_AUDIO := false
@@ -119,6 +120,8 @@ TARGET_RELEASETOOL_IMG_FROM_TARGET_SCRIPT := ./device/samsung/galaxyr/releasetoo
 
 # Custom squisher, final step script
 TARGET_CUSTOM_RELEASETOOL := ./device/samsung/galaxyr/releasetools/squisher
+
+TARGET_PROVIDES_INIT_RC := true
 
 # Assert
 TARGET_OTA_ASSERT_DEVICE := galaxyr,GT-I9103

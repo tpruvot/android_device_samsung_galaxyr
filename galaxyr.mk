@@ -46,6 +46,7 @@ PRODUCT_PACKAGES += \
     galaxyrSettings \
     SamsungServiceMode \
     Torch \
+    FM \
     Galaxy4 \
     NoiseField \
     PhaseBeam \
@@ -74,6 +75,9 @@ DISABLE_DEXPREOPT := false
 PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/init.n1.rc:root/init.n1.rc \
     device/samsung/galaxyr/ueventd.n1.rc:root/ueventd.n1.rc
+
+# debug purpose...
+PRODUCT_COPY_FILES += device/samsung/galaxyr/configs/init.rc:root/init.rc
 
 # Prebuilt modules
 PRODUCT_COPY_FILES += \
