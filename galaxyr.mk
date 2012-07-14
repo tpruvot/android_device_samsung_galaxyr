@@ -91,10 +91,11 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/configs/vold.fstab:system/etc/vold.fstab
 
-# Wifi
+# Wifi, BT
 PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/configs/wifi.conf:system/etc/wifi/wifi.conf \
-    device/samsung/galaxyr/configs/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf
+    device/samsung/galaxyr/configs/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
+    device/samsung/galaxyr/configs/BCM4330B1_002.001.003.0221.0263.hcd:system/etc/bluetooth/BCM4330B1_002.001.003.0221.0263.hcd \
 
 # GPS
 PRODUCT_COPY_FILES += \
@@ -172,7 +173,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.ril.hsupa.category=5 \
     ro.ril.hsxpa=2 \
     rild.libpath=/system/lib/libsec-ril.so \
-    rild.libargs="-d /dev/ttys0"
+    rild.libargs="-d /dev/ttyS0"
 
 # The OpenGL ES API level that is natively supported by this device.
 # This is a 16.16 fixed point number

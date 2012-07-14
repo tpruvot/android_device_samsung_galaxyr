@@ -1,5 +1,14 @@
 on early-init
 
+    export PHONE_STORAGE /mnt/emmc
+
+on init
+
+    mount rootfs rootfs / rw remount
+
+    # create mountpoints for internal "SD"
+    mkdir /mnt/emmc 0000 system system
+
     mount debugfs debugfs /sys/kernel/debug
 
     write /sys/class/firmware/timeout 5
@@ -331,8 +340,15 @@ service audiotunemode /system/bin/audiotunemode
     oneshot
 
 # Bluetooth
-service btld /system/bin/logwrapper /system/bin/btld -hb 3000000 -hp /dev/ttyHS2 -lpm 1
-    user root
+#service btld /system/bin/logwrapper /system/bin/btld -hb 3000000 -hp /dev/ttyHS2 -lpm 1
+#    user root
+#    group bluetooth net_bt_admin
+#    disabled
+#    oneshot
+
+service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --baudrate 3000000
+    --patchram /system/etc/bluetooth/BCM4330B1_002.001.003.0221.0263.hcd /dev/ttyHS2
+    user bluetooth
     group bluetooth net_bt_admin
     disabled
     oneshot
@@ -374,10 +390,18 @@ service bt_dut_cmd /system/bin/bcm_dut
     disabled
     oneshot
 
-service akmd2 /system/bin/akmd2
-    class post-zygote_services
-    user compass
-    group compass misc input
+#service get_macaddrs /system/bin/get_macaddrs
+#   user root
+#    oneshot
+#    disabled
+
+#on property:init.svc.ril-daemon=running
+#    start get_macaddrs
+
+#service akmd2 /system/bin/akmd2
+#    class post-zygote_services
+#    user compass
+#    group compass misc input
 
 ##############################################################################
 # EVENTS
