@@ -26,7 +26,6 @@ adb pull /system/lib/hw/overlay.tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/p
 adb pull /system/lib/hw/sensors.tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
 adb pull /system/lib/hw/sensors.GT-I9103.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
 adb pull /system/lib/hw/gps.GT-I9103.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
-adb pull /system/lib/hw/lights.n1.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
 
 # EGL
 adb pull /system/lib/egl ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/egl
@@ -222,7 +221,6 @@ PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/overlay.tegra.so:system/lib/hw/overlay.tegra.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/sensors.tegra.so:system/lib/hw/sensors.tegra.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/gps.GT-I9103.so:system/lib/hw/vendor-gps.GT-I9103.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/lights.n1.so:system/lib/hw/lights.n1.so
 
 # EGL
 PRODUCT_COPY_FILES += \\

@@ -61,6 +61,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     sensors.n1 \
     sensors.tegra \
+    lights.n1 \
     lights.tegra \
     gps.n1 \
     gralloc.tegra \
