@@ -74,6 +74,8 @@ on boot
     chown dhcp dhcp /data/misc/dhcpcd
 
     setprop wifi.interface eth0
+    setprop softap.interface wl0.1
+    setprop wifi.ap.interface wl0.1
 
     setprop service.adb.root 1
 
@@ -403,6 +405,12 @@ service bt_dut_cmd /system/bin/bcm_dut
     disabled
     oneshot
 
+# triggered by holding down both volume keys + power
+service reboot_key /system/bin/toolbox reboot
+    user system
+    oneshot
+    keycodes 115 107
+    disabled
 
 ##############################################################################
 # EVENTS

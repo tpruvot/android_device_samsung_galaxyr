@@ -25,6 +25,11 @@ ro.telephony.default_network=3
 # Main wifi network interface
 wifi.interface=eth0
 
+# Wifi ap interface
+wifi.ap.interface=wl0.1
+softap.interface=wl0.1
+ro.wifi-ap.fw-path=/etc/bcm4330_aps.bin
+
 # BT mac address
 ro.bt.bdaddr_path=/efs/imei/bt.txt
 
