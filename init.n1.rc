@@ -1,6 +1,7 @@
 on early-init
 
     export PHONE_STORAGE /mnt/emmc
+    export USBHOST_STORAGE /mnt/usbdisk
 
 on init
 
@@ -78,6 +79,14 @@ on boot
 
     # required to start the ril
     chown radio radio /sys/devices/platform/tegra-ehci.1/ehci_power
+
+    # samsung ril specific
+    mkdir /data/misc/radio 0774 radio radio
+    mkdir /data/log 0775 system system
+    chmod 0775 /data/log
+    chmod 0775 /data/anr
+    chmod 0662 /dev/log/radio
+    chmod 0662 /dev/log/event
 
     # create data/gps for GPS demon
     chmod 0660 /dev/ttyHS0
@@ -202,6 +211,7 @@ on boot
 
     # permissions for MTP device node_temporary permission_will be changed 0660
     chmod 0666 /dev/usb_mtp_gadget
+    chown system system /dev/usb_mtp_gadget
 
     # permissions for USB Accessory device(ADK) node_temporary permission_will be changed 0660
     chown root usb /dev/usb_accessory
@@ -250,6 +260,10 @@ on boot
     chmod 0775 /efs/.files/.dx1
     chmod 0775 /efs/.files/.dm33
     chmod 0775 /efs/.files/.mp301
+
+    mkdir /efs/.android 0775
+    chown media system /efs/.android
+    chmod 0775 /efs/.android
 
     # SISO-PLAYREADY-CHANGES ####################################
 
@@ -303,6 +317,11 @@ service immvibed /system/bin/immvibed_n1
     group shell
     oneshot
 
+service notified_event /system/bin/notified_event
+    user system
+    group system
+    socket notified_event stream 0660 root system
+
 service wpa_supplicant /system/bin/wpa_supplicant \
     -D wext -i eth0 -c /data/misc/wifi/wpa_supplicant.conf
 #   we will start as root and wpa_supplicant will switch to user wifi
@@ -347,6 +366,12 @@ service audiotunemode /system/bin/audiotunemode
 #    disabled
 #    oneshot
 
+service map /system/bin/sdptool add --channel=16 MAS
+    user bluetooth
+    group bluetooth net_bt_admin
+    disabled
+    oneshot
+
 service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --baudrate 3000000 \
     --patchram /system/etc/bluetooth/BCM4330B1_002.001.003.0221.0263.hcd /dev/ttyHS2
     user bluetooth
@@ -363,21 +388,6 @@ on property:service.brcm.bt.soft_onoff=1
 on property:service.brcm.bt.soft_onoff=0
 #   stop btld
     stop hciattach
-
-# Duplicated (init.rc)
-#service mtpd /system/bin/mtpd
-#    socket mtpd stream 600 system system
-#    user vpn
-#    group vpn net_admin net_raw
-#    disabled
-#    oneshot
-
-# Duplicated (init.rc)
-#service ril-daemon /system/bin/rild
-#    socket rild stream 660 root radio
-#    socket rild-debug stream 660 radio system
-#    user root
-#    group radio cache inet misc audio sdcard_rw log
 
 service DR-deamon /system/bin/drexe
     user root
