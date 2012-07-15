@@ -1,5 +1,8 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2012 The Android Open Source Project
+ *
+ * InputReader based sensor interface for KXTF9 I2C sensor
+ * Tanguy Pruvot, July 2012 <tpruvot@github>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,18 +58,24 @@ KXTFSensor::KXTFSensor()
     }
 }
 
-KXTFSensor::~KXTFSensor() {
+KXTFSensor::~KXTFSensor()
+{
+    LOGV(LOG_TAG "[KXTF9] " __FUNCTION__);
     if (mEnabled) {
         enable(0, 0);
     }
 }
 
-int KXTFSensor::setInitialState() {
+int KXTFSensor::setInitialState()
+{
     struct input_absinfo absinfo_x;
     struct input_absinfo absinfo_y;
     struct input_absinfo absinfo_z;
     float value;
 
+    /* Sample raw data :
+     *   12, -298, -979
+     */
     FILE *fd = fopen("/sys/devices/virtual/sec/sec_kxtf9/kxtf9_rawdata", "r");
     if (fd != NULL) {
         char buf[24] = "";
@@ -87,22 +96,7 @@ int KXTFSensor::setInitialState() {
             mHasPendingEvent = true;
         }
     }
-/*
-    cat /sys/devices/virtual/sec/sec_kxtf9/kxtf9_rawdata
-    12, -298, -979
 
-    if (!ioctl(data_fd, EVIOCGABS(EVENT_TYPE_ACCEL_X), &absinfo_x) &&
-        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_ACCEL_Y), &absinfo_y) &&
-        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_ACCEL_Z), &absinfo_z)) {
-        value = absinfo_x.value;
-        mPendingEvent.data[0] = value * CONVERT_A_X;
-        value = absinfo_x.value;
-        mPendingEvent.data[1] = value * CONVERT_A_Y;
-        value = absinfo_x.value;
-        mPendingEvent.data[2] = value * CONVERT_A_Z;
-        mHasPendingEvent = true;
-    }
-*/
     if (mHasPendingEvent) {
         LOGD(LOG_TAG "[KXTF9] %s: %d %d %d -> %f %f %f", __FUNCTION__,
                 absinfo_x.value, absinfo_y.value, absinfo_z.value,
@@ -112,13 +106,14 @@ int KXTFSensor::setInitialState() {
     return 0;
 }
 
-int KXTFSensor::enable(int32_t, int en) {
+int KXTFSensor::enable(int32_t, int en)
+{
     int flags = en ? 1 : 0;
     if (flags != mEnabled) {
         int fd;
         strcpy(&input_sysfs_path[input_sysfs_path_len], "enable");
 
-        LOGI(LOG_TAG ": %s %s", __FUNCTION__, input_sysfs_path);
+        LOGI(LOG_TAG "[KXTF9] %s(%d) %s", __FUNCTION__, en, input_sysfs_path);
         fd = open(input_sysfs_path, O_RDWR);
         if (fd >= 0) {
             char buf[2];
@@ -136,7 +131,7 @@ int KXTFSensor::enable(int32_t, int en) {
             setInitialState();
             return 0;
         }
-        LOGE(LOG_TAG ": %s enable failed, err %d", __FUNCTION__, errno);
+        LOGE(LOG_TAG "[KXTF9] %s(%d) failed, err %d", __FUNCTION__, en, errno);
         return -1;
     }
     return 0;
@@ -180,6 +175,7 @@ int KXTFSensor::readEvents(sensors_event_t* data, int count)
     int numEventReceived = 0;
     input_event const* event;
 
+    int timeout = 128;
 #if FETCH_FULL_EVENT_BEFORE_RETURN
 again:
 #endif
@@ -189,13 +185,10 @@ again:
             float value = event->value;
             if (event->code == EVENT_TYPE_ACCEL_X) {
                 mPendingEvent.data[1] = value * KXTF9_CONVERT_A_Y; /* X/Y inversed */
-                // mPendingEvent.acceleration.y = mPendingEvent.data[1];
             } else if (event->code == EVENT_TYPE_ACCEL_Y) {
                 mPendingEvent.data[0] = value * KXTF9_CONVERT_A_X;
-                // mPendingEvent.acceleration.x = mPendingEvent.data[0];
             } else if (event->code == EVENT_TYPE_ACCEL_Z) {
                 mPendingEvent.data[2] = value * KXTF9_CONVERT_A_Z;
-                // mPendingEvent.acceleration.z = mPendingEvent.data[3];
             }
         } else if (type == EV_SYN) {
             mPendingEvent.timestamp = timevalToNano(event->time);
@@ -216,7 +209,7 @@ again:
 #if FETCH_FULL_EVENT_BEFORE_RETURN
     /* if we didn't read a complete event, see if we can fill and
        try again instead of returning with nothing and redoing poll. */
-    if (numEventReceived == 0 && mEnabled == 1) {
+    if (numEventReceived == 0 && mEnabled == 1 && --timeout) {
         n = mInputReader.fill(data_fd);
         if (n)
             goto again;

@@ -23,12 +23,12 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 
-#include "ak8973b.h"
+#define LOG_NDEBUG 0
 
 #include <cutils/log.h>
-#include "AkmSensor.h"
+#include <cutils/properties.h>
 
-#define LOG_NDEBUG 0
+#include "AkmSensor.h"
 
 /*****************************************************************************/
 
@@ -55,6 +55,18 @@ AkmSensor::AkmSensor()
       mPendingMask(0),
       mInputReader(32)
 {
+    char prop[PROPERTY_VALUE_MAX];
+    bool loadlibakm = true;
+
+    if (property_get("hw.sensor.libakm.disable", prop, NULL)) {
+        if (strcmp(prop, "true") == 0) {
+            loadlibakm = false;
+        }
+        else if (strncmp(prop, "1", 1) == 0) {
+            loadlibakm = false;
+        }
+    }
+
     /* Open the library before opening the input device.  The library
      * creates a uinput device.
      */
@@ -259,47 +271,54 @@ void AkmSensor::processEvent(int code, int value)
 {
     switch (code) {
         case EVENT_TYPE_ACCEL_X:
+            LOGV("AkmSensor: EVENT_TYPE_ACCEL_X value=%d", value);
             mPendingMask |= 1<<Accelerometer;
             mPendingEvents[Accelerometer].acceleration.x = value * CONVERT_A_X;
             break;
         case EVENT_TYPE_ACCEL_Y:
+            LOGV("AkmSensor: EVENT_TYPE_ACCEL_Y value=%d", value);
             mPendingMask |= 1<<Accelerometer;
             mPendingEvents[Accelerometer].acceleration.y = value * CONVERT_A_Y;
             break;
         case EVENT_TYPE_ACCEL_Z:
+            LOGV("AkmSensor: EVENT_TYPE_ACCEL_Z value=%d", value);
             mPendingMask |= 1<<Accelerometer;
             mPendingEvents[Accelerometer].acceleration.z = value * CONVERT_A_Z;
             break;
 
         case EVENT_TYPE_MAGV_X:
-            LOGV("AkmSensor: EVENT_TYPE_MAGV_X value =%d", value);
+            LOGV("AkmSensor: EVENT_TYPE_MAGV_X value=%d", value);
             mPendingMask |= 1<<MagneticField;
             mPendingEvents[MagneticField].magnetic.x = value * CONVERT_M_X;
             break;
         case EVENT_TYPE_MAGV_Y:
-            LOGV("AkmSensor: EVENT_TYPE_MAGV_Y value =%d", value);
+            LOGV("AkmSensor: EVENT_TYPE_MAGV_Y value=%d", value);
             mPendingMask |= 1<<MagneticField;
             mPendingEvents[MagneticField].magnetic.y = value * CONVERT_M_Y;
             break;
         case EVENT_TYPE_MAGV_Z:
-            LOGV("AkmSensor: EVENT_TYPE_MAGV_Z value =%d", value);
+            LOGV("AkmSensor: EVENT_TYPE_MAGV_Z value=%d", value);
             mPendingMask |= 1<<MagneticField;
             mPendingEvents[MagneticField].magnetic.z = value * CONVERT_M_Z;
             break;
 
         case EVENT_TYPE_YAW:
+            LOGV("AkmSensor: EVENT_TYPE_YAW (orient) value=%d", value);
             mPendingMask |= 1<<Orientation;
             mPendingEvents[Orientation].orientation.azimuth = value * CONVERT_O_A;
             break;
         case EVENT_TYPE_PITCH:
+            LOGV("AkmSensor: EVENT_TYPE_PITCH (orient) value=%d", value);
             mPendingMask |= 1<<Orientation;
             mPendingEvents[Orientation].orientation.pitch = value * CONVERT_O_P;
             break;
         case EVENT_TYPE_ROLL:
+            LOGV("AkmSensor: EVENT_TYPE_ROLL (orient) value=%d", value);
             mPendingMask |= 1<<Orientation;
             mPendingEvents[Orientation].orientation.roll = value * CONVERT_O_R;
             break;
         case EVENT_TYPE_ORIENT_STATUS:
+            LOGV("AkmSensor: EVENT_TYPE_ORIENT_STATUS value=0x%x", value);
             uint8_t status = uint8_t(value & SENSOR_STATE_MASK);
             if (status == 4)
                 status = 0;

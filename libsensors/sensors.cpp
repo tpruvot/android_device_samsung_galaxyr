@@ -90,7 +90,7 @@ static const struct sensor_t sSensorList[] = {
         { "KXTF9 3-axis Accelerometer",
           "Kyonix",
           1, SENSORS_ACCELERATION_HANDLE,
-          SENSOR_TYPE_ACCELEROMETER, RANGE_A, CONVERT_A, 0.23f, 20000, { } },
+          SENSOR_TYPE_ACCELEROMETER, RANGE_A, CONVERT_A, 0.23f, 5000, { } },
         { "AK8975 3-axis Magnetic field sensor",
           "Asahi Kasei Microdevices",
           1, SENSORS_MAGNETIC_FIELD_HANDLE,
@@ -98,11 +98,11 @@ static const struct sensor_t sSensorList[] = {
         { "AK8975 Orientation sensor",
           "Asahi Kasei Microdevices",
           1, SENSORS_ORIENTATION_HANDLE,
-          SENSOR_TYPE_ORIENTATION, 360.0f, CONVERT_O, 7.8f, 16667, { } },
+          SENSOR_TYPE_ORIENTATION, 360.0f, CONVERT_O, 7.8f, 5000, { } },
         { "MPU3050 Gyroscope sensor",
           "InvenSense",
           1, SENSORS_GYROSCOPE_HANDLE,
-          SENSOR_TYPE_GYROSCOPE, RANGE_GYRO, CONVERT_GYRO, 6.1f, 1190, { } },
+          SENSOR_TYPE_GYROSCOPE, RANGE_GYRO, CONVERT_GYRO, 6.1f, 0, { } },
 };
 
 

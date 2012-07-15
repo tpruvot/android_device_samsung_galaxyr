@@ -27,7 +27,7 @@
 
 #include "GyroSensor.h"
 
-#define FETCH_FULL_EVENT_BEFORE_RETURN 1
+#define FETCH_FULL_EVENT_BEFORE_RETURN 0
 #define IGNORE_EVENT_TIME 350000000
 /*****************************************************************************/
 
@@ -64,13 +64,13 @@ int GyroSensor::setInitialState() {
     struct input_absinfo absinfo_z;
     float value;
     if (!ioctl(data_fd, EVIOCGABS(EVENT_TYPE_GYRO_X), &absinfo_x) &&
-        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_GYRO_X), &absinfo_y) &&
-        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_GYRO_X), &absinfo_z)) {
+        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_GYRO_Y), &absinfo_y) &&
+        !ioctl(data_fd, EVIOCGABS(EVENT_TYPE_GYRO_Z), &absinfo_z)) {
         value = absinfo_x.value;
         mPendingEvent.data[0] = value * CONVERT_GYRO_X;
-        value = absinfo_x.value;
+        value = absinfo_y.value;
         mPendingEvent.data[1] = value * CONVERT_GYRO_Y;
-        value = absinfo_x.value;
+        value = absinfo_z.value;
         mPendingEvent.data[2] = value * CONVERT_GYRO_Z;
         mHasPendingEvent = true;
     }
@@ -145,6 +145,7 @@ int GyroSensor::readEvents(sensors_event_t* data, int count)
     int numEventReceived = 0;
     input_event const* event;
 
+    int timeout = 128;
 #if FETCH_FULL_EVENT_BEFORE_RETURN
 again:
 #endif
@@ -178,7 +179,7 @@ again:
 #if FETCH_FULL_EVENT_BEFORE_RETURN
     /* if we didn't read a complete event, see if we can fill and
        try again instead of returning with nothing and redoing poll. */
-    if (numEventReceived == 0 && mEnabled == 1) {
+    if (numEventReceived == 0 && mEnabled == 1 && --timeout > 0) {
         n = mInputReader.fill(data_fd);
         if (n)
             goto again;
