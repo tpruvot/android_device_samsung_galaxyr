@@ -81,11 +81,11 @@ adb pull /system/etc/audio/Tx_ControlParams_WIRED_HEADPHONE_WIDEBAND.txt ../../.
 adb pull /system/etc/audio/Tx_ControlParams_WIRED_HEADSET_WIDEBAND.txt ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/Tx_ControlParams_WIRED_HEADSET_WIDEBAND.txt
 
 # Sensors
-adb pull /system/lib/libacc.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/libacc.so
+# adb pull /system/lib/libacc.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/libacc.so
 adb pull /system/lib/libakm.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/libakm.so
 
 # Vold and Storage
-adb pull /system/bin/vold ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+# adb pull /system/bin/vold ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libext2fs.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libext2_blkid.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libext2_com_err.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
@@ -94,31 +94,24 @@ adb pull /system/lib/libext2_uuid.so ../../../vendor/$MANUFACTURER/$DEVICE/propr
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/vold
 
 # WIFI
+adb pull /system/bin/BCM4330B1_002.001.003.0221.0263.hcd ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/BCM4330B1_002.001.003.0221.0263.hcd
 adb pull /system/etc/wifi/bcm4330_aps.bin ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/bcm4330_aps.bin
 adb pull /system/etc/wifi/bcm4330_mfg.bin ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/bcm4330_mfg.bin
-adb pull /system/etc/wifi/bcm4330_mfg.bin_b0 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/bcm4330_mfg.bin_b0
 adb pull /system/etc/wifi/bcm4330_sta.bin ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/bcm4330_sta.bin
-adb pull /system/etc/wifi/bcm4330_sta.bin_b0 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/bcm4330_sta.bin_b0
 adb pull /system/etc/wifi/nvram_mfg.txt ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nvram_mfg.txt
-adb pull /system/etc/wifi/nvram_mfg.txt_b0 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nvram_mfg.txt_b0
 adb pull /system/etc/wifi/nvram_mfg.txt_murata ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nvram_mfg.txt_murata
 adb pull /system/etc/wifi/nvram_net.txt ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nvram_net.txt
-adb pull /system/etc/wifi/nvram_net.txt_b0 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nvram_net.txt_b0
 adb pull /system/etc/wifi/nvram_net.txt_murata ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nvram_net.txt_murata
 adb pull /system/bin/btld ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/wlandutservice ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
-adb pull /system/bin/wpa_supplicant ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/macloader ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/mfgloader ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/etc/wifi/wl ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
-adb pull /system/etc/wifi/iwmulticall ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/btld
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/wlandutservice
-chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/wpa_supplicant
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/macloader
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/mfgloader
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/wl
-chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/iwmulticall
 
 # OMX shared libs
 adb pull /system/lib/libomx_aacdec_sharedlibrary.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
@@ -131,14 +124,41 @@ adb pull /system/lib/libomx_sharedlibrary.so ../../../vendor/$MANUFACTURER/$DEVI
 
 # NVIDIA
 adb pull /system/lib/libnvos.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvomx.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libnvomxilclient.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libnvrm.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libnvrm_channel.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libnvrm_graphics.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libnvddk_2d_v2.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libnvddk_2d.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
-adb pull /system/lib/libnvwsi.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvddk_aes_user.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvddk_audiofx.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvec.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libnvdispmgr_d.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_asfparser.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_audio.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_aviparser.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_camera.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_contentpipe.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_image.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_manager.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_misc.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_msaudio.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_parser.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_service.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_videorenderer.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_video.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_vp6_video.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvmm_writer.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvodm_dtvtuner.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvodm_imager.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvodm_query.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvsm.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvtestio.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvtestresults.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvwinsys.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libnvwsi.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libcgdrv.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 
 # Firmwares
@@ -201,7 +221,6 @@ PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/gralloc.tegra.so:system/lib/hw/gralloc.tegra.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/overlay.tegra.so:system/lib/hw/overlay.tegra.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/sensors.tegra.so:system/lib/hw/sensors.tegra.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/sensors.GT-I9103.so:system/lib/hw/sensors.GT-I9103.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/gps.GT-I9103.so:system/lib/hw/vendor-gps.GT-I9103.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/lights.n1.so:system/lib/hw/lights.n1.so
 
@@ -213,7 +232,6 @@ PRODUCT_COPY_FILES += \\
 
 # RIL files
 PRODUCT_COPY_FILES += \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libril.so:system/lib/libril.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsec-ril.so:system/lib/libsec-ril.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsecril-client.so:system/lib/libsecril-client.so
 
@@ -258,31 +276,21 @@ PRODUCT_COPY_FILES += \\
 
 # SENSORS
 PRODUCT_COPY_FILES += \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libacc.so:system/lib/libacc.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libakm.so:system/lib/libakm.so
-
-# Vold and Storage
-PRODUCT_COPY_FILES += \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/vold:system/bin/vold
 
 # WIFI
 PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bcm4330_aps.bin:system/etc/wifi/bcm4330_aps.bin \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bcm4330_mfg.bin:system/etc/wifi/bcm4330_mfg.bin \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/bcm4330_mfg.bin_b0:system/etc/wifi/bcm4330_mfg.bin_b0 \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bcm4330_sta.bin:system/etc/wifi/bcm4330_sta.bin \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/bcm4330_sta.bin_b0:system/etc/wifi/bcm4330_sta.bin_b0 \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_mfg.txt:system/etc/wifi/nvram_mfg.txt \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_mfg.txt_b0:system/etc/wifi/nvram_mfg.txt_b0 \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_mfg.txt_murata:system/etc/wifi/nvram_mfg.txt_murata \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_net.txt:system/etc/wifi/nvram_net.txt \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_net.txt_b0:system/etc/wifi/nvram_net.txt_b0 \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_net.txt_murata:system/etc/wifi/nvram_net.txt_murata \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/macloader:system/bin/macloader \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/mfgloader:system/bin/mfgloader \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/wl:system/etc/wifi/wl \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/btld:system/bin/btld \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/iwmulticall:system/etc/wifi/iwmulticall
 
 # OMX shared libraries
 PRODUCT_COPY_FILES += \\
@@ -297,14 +305,41 @@ PRODUCT_COPY_FILES += \\
 # NVIDIA
 PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvos.so:system/lib/libnvos.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvomx.so:/system/lib/libnvomx.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvomxilclient.so:system/lib/libnvomxilclient.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvrm.so:system/lib/libnvrm.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvrm_channel.so:system/lib/libnvrm_channel.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvrm_graphics.so:system/lib/libnvrm_graphics.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvdispmgr_d.so:system/lib/libnvdispmgr_d.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvddk_2d_v2.so:system/lib/libnvddk_2d_v2.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvddk_2d.so:system/lib/libnvddk_2d.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvddk_aes_user.so:/system/lib/libnvddk_aes_user.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvddk_audiofx.so:/system/lib/libnvddk_audiofx.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvec.so:/system/lib/libnvec.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_asfparser.so:/system/lib/libnvmm_asfparser.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_audio.so:/system/lib/libnvmm_audio.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_aviparser.so:/system/lib/libnvmm_aviparser.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_camera.so:/system/lib/libnvmm_camera.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_contentpipe.so:/system/lib/libnvmm_contentpipe.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_image.so:/system/lib/libnvmm_image.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_manager.so:/system/lib/libnvmm_manager.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_misc.so:/system/lib/libnvmm_misc.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_msaudio.so:/system/lib/libnvmm_msaudio.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_parser.so:/system/lib/libnvmm_parser.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_service.so:/system/lib/libnvmm_service.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm.so:/system/lib/libnvmm.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_videorenderer.so:/system/lib/libnvmm_videorenderer.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_video.so:/system/lib/libnvmm_video.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_vp6_video.so:/system/lib/libnvmm_vp6_video.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvmm_writer.so:/system/lib/libnvmm_writer.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvodm_dtvtuner.so:/system/lib/libnvodm_dtvtuner.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvodm_imager.so:/system/lib/libnvodm_imager.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvodm_query.so:/system/lib/libnvodm_query.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvsm.so:/system/lib/libnvsm.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvtestio.so:/system/lib/libnvtestio.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvtestresults.so:/system/lib/libnvtestresults.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvwinsys.so:/system/lib/libnvwinsys.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvwsi.so:system/lib/libnvwsi.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libnvdispmgr_d.so:system/lib/libnvdispmgr_d.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libcgdrv.so:system/lib/libcgdrv.so
 
 # Firmwares
