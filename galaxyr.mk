@@ -185,14 +185,11 @@ PRODUCT_PROPERTY_OVERRIDES := \
 # Note that the only such settings should be the ones that are too low-level to
 # be reachable from resources or other mechanisms.
 PRODUCT_PROPERTY_OVERRIDES += \
-    wifi.interface=eth0 \
     wifi.supplicant_scan_interval=30 \
     ro.board.platform=tegra \
     ro.sf.lcd_density=240 \
-    ro.telephony.ril_class=samsung \
     ro.telephony.sends_barcount=1 \
     ro.com.android.dataroaming=false \
-    mobiledata.interfaces=eth0,rmnet0,rmnet1,rmnet2 \
     dalvik.vm.heapsize=64m \
     persist.service.usb.setting=0 \
     dev.sfbootcomplete=0 \

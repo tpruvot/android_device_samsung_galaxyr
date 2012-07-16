@@ -84,7 +84,7 @@
          USB interfaces.  If the device doesn't want to support tething over USB this should
          be empty.  An example would be "usb.*" -->
     <string-array translatable="false" name="config_tether_usb_regexs">
-        <item>usb1</item>
+        <item>usb\\d</item>
     </string-array>
 
     <!-- List of regexpressions describing the interface (if any) that represent tetherable
@@ -102,8 +102,7 @@
          tethering on a new interface called "foo2" add <item>"foo\\d"</item> to the array -->
     <string-array translatable="false" name="config_tether_upstream_regexs">
         <item>eth\\d</item>
-        <item>ppp\\d</item>
-        <item>vsnet\\d</item>
+        <item>rmnet\\d</item>
     </string-array>
 
     <!-- Boolean indicating if we require the use of DUN on mobile for tethering.
@@ -327,7 +326,7 @@
     <integer name="config_datause_throttle_kbitsps">300</integer>
 
     <!-- The default iface on which to monitor data use -->
-    <string name="config_datause_iface">ppp0</string>
+    <string name="config_datause_iface">rmnet0</string>
 
     <!-- The default reduced-datarate notification mask -->
     <!-- 2 means give warning -->
