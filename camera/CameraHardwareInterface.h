@@ -121,15 +121,15 @@ public:
      */
     virtual bool        msgTypeEnabled(int32_t msgType) = 0; // 0x1C
 
-#if 1
+#ifdef USE_GETBUFFERINFO
     /*
      * Get the recording buffer information from HAL layer. QCOM and SAMSUNG libs
      */
     virtual status_t    getBufferInfo(sp<IMemory>& Frame, size_t *alignedSize);
 #endif
-
+#ifdef CAF_CAMERA_GB_REL
     virtual void encodeData();
-
+#endif
     /**
      * Start preview mode.
      */
