@@ -170,7 +170,7 @@ static int set_light_leds(struct light_state_t const *state, int type)
         return -EINVAL;
     }
 
-    LOGE("Mode is %d, rgb 0x%x, on %d, off %d\n",
+    LOGI("Mode is %d, rgb 0x%x, on %d, off %d\n",
         state->flashMode, state->color,
         state->flashOnMS,state->flashOffMS);
 
