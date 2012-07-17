@@ -23,8 +23,6 @@ MANUFACTURER=samsung
 mkdir -p ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw
 adb pull /system/lib/hw/gralloc.tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
 adb pull /system/lib/hw/overlay.tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
-adb pull /system/lib/hw/sensors.tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
-adb pull /system/lib/hw/sensors.GT-I9103.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
 adb pull /system/lib/hw/gps.GT-I9103.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
 
 # EGL
@@ -83,7 +81,6 @@ adb pull /system/etc/audio/Tx_ControlParams_WIRED_HEADSET_WIDEBAND.txt ../../../
 adb pull /system/lib/libakm.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/libakm.so
 
 # Vold and Storage
-# adb pull /system/bin/vold ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libext2fs.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libext2_blkid.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libext2_com_err.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
@@ -218,7 +215,6 @@ PRODUCT_COPY_FILES := \\
 PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/gralloc.tegra.so:system/lib/hw/gralloc.tegra.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/overlay.tegra.so:system/lib/hw/overlay.tegra.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/sensors.tegra.so:system/lib/hw/sensors.tegra.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/lib/hw/gps.GT-I9103.so:system/lib/hw/vendor-gps.GT-I9103.so \\
 
 # EGL
