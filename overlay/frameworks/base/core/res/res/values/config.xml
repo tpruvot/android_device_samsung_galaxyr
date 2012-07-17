@@ -101,8 +101,8 @@
     <!-- Regex array of allowable upstream ifaces for tethering - for example if you want
          tethering on a new interface called "foo2" add <item>"foo\\d"</item> to the array -->
     <string-array translatable="false" name="config_tether_upstream_regexs">
-        <item>eth\\d</item>
         <item>rmnet\\d</item>
+        <item>eth\\d</item>
     </string-array>
 
     <!-- Boolean indicating if we require the use of DUN on mobile for tethering.
@@ -263,10 +263,10 @@
          than the size of the config_autoBrightnessLevels array.
          This must be overridden in platform specific overlays -->
     <integer-array name="config_autoBrightnessButtonBacklightValues">
-	<item>0</item>
 	<item>3</item>
-	<item>127</item>
-	<item>255</item>
+	<item>3</item>
+	<item>3</item>
+	<item>3</item>
 	<item>0</item>
     </integer-array>
 
