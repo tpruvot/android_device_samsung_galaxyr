@@ -173,12 +173,14 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.ril.hsdpa.category=8 \
     ro.ril.hsupa.category=5 \
     ro.ril.hsxpa=2 \
+    ro.kernel.android.ril=yes \
+    ro.telephony.ril_class=samsung \
     rild.libpath=/system/lib/libsec-ril.so \
     rild.libargs="-d /dev/ttyS0"
 
 # The OpenGL ES API level that is natively supported by this device.
 # This is a 16.16 fixed point number
-PRODUCT_PROPERTY_OVERRIDES := \
+PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=131072
 
 # These are the hardware-specific settings that are stored in system properties.
