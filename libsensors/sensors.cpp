@@ -81,7 +81,7 @@
 /*****************************************************************************/
 
 /* The SENSORS Modules */
-static const struct sensor_t sSensorList[] = {
+static struct sensor_t sSensorList[] = {
     { "CM3663 Light sensor", "Capella Microsystems",
       1, SENSORS_LIGHT_HANDLE,
         SENSOR_TYPE_LIGHT, 10240.0f, 1.0f, 0.75f, 0, { }
@@ -92,14 +92,14 @@ static const struct sensor_t sSensorList[] = {
     },
     { "KXTF9 3-axis Accelerometer", "Kyonix",
       1, SENSORS_ACCELERATION_HANDLE,
-          SENSOR_TYPE_ACCELEROMETER, RANGE_A, CONVERT_A, 0.23f, 5000, { }
+          SENSOR_TYPE_ACCELEROMETER, RANGE_A, CONVERT_A, 0.23f, 100000, { }
     },
     { "AK8975 3-axis Magnetic field sensor", "Asahi Kasei Microdevices",
-      1, SENSORS_MAGNETIC_FIELD_HANDLE, SENSOR_TYPE_MAGNETIC_FIELD, 2000.0f, CONVERT_M, 6.8f, 5000, { }
+      1, SENSORS_MAGNETIC_FIELD_HANDLE, SENSOR_TYPE_MAGNETIC_FIELD, 2000.0f, CONVERT_M, 6.8f, 100000, { }
     },
     { "AK8975 Orientation sensor", "Asahi Kasei Microdevices",
       1, SENSORS_ORIENTATION_HANDLE,
-          SENSOR_TYPE_ORIENTATION, 360.0f, CONVERT_O, 7.8f, 5000, { }
+          SENSOR_TYPE_ORIENTATION, 360.0f, CONVERT_O, 7.8f, 100000, { }
     },
 #ifdef USE_MPU
     { "MPU3050 Gyroscope sensor", "InvenSense",
@@ -109,7 +109,7 @@ static const struct sensor_t sSensorList[] = {
 #endif
     { "NCT1008 Battery Temperature", "ON Semiconductor",
       1, SENSORS_TEMPERATURE_HANDLE,
-          SENSOR_TYPE_TEMPERATURE, 85.0f, 1.0f, 0.240f, 10, { }
+          SENSOR_TYPE_TEMPERATURE, 127.0f, 1.0f, 0.240f, 500000, { }
     },
 };
 
