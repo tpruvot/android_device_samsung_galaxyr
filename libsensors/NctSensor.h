@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 The Android Open Source Project
+ * Copyright (C) 2012 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_AKM_SENSOR_H
-#define ANDROID_AKM_SENSOR_H
+#ifndef ANDROID_NCT_SENSOR_H
+#define ANDROID_NCT_SENSOR_H
 
 #include <stdint.h>
 #include <errno.h>
 #include <sys/cdefs.h>
 #include <sys/types.h>
-
 
 #include "sensors.h"
 #include "SensorBase.h"
@@ -31,33 +30,25 @@
 
 struct input_event;
 
-class AkmSensor : public SensorBase {
-public:
-            AkmSensor();
-    virtual ~AkmSensor();
+class NctSensor : public SensorBase {
+    int mEnabled;
+    int64_t mEnabledTime;
 
-    enum {
-        Accelerometer   = 0,
-        MagneticField   = 1,
-        Orientation     = 2,
-        Temperature     = 3,
-        numSensors
-    };
-
-    virtual int setDelay(int32_t handle, int64_t ns);
-    virtual int enable(int32_t handle, int enabled);
-    virtual int readEvents(sensors_event_t* data, int count);
-    void processEvent(int code, int value);
-
-private:
-    int loadAKMLibrary();
-    void *mLibAKM;
-    uint32_t mEnabled;
-    uint32_t mPendingMask;
     InputEventCircularReader mInputReader;
-    sensors_event_t mPendingEvents[numSensors];
+    sensors_event_t mPendingEvent;
+    bool mHasPendingEvent;
+
+    int readSysFsValue();
+    float convertTemperature(int value) const;
+
+public:
+            NctSensor();
+    virtual ~NctSensor();
+    virtual int readEvents(sensors_event_t* data, int count);
+    virtual bool hasPendingEvents() const;
+    virtual int enable(int32_t handle, int enabled);
 };
 
 /*****************************************************************************/
 
-#endif  // ANDROID_AKM_SENSOR_H
+#endif  // ANDROID_NCT_SENSOR_H

@@ -24,11 +24,13 @@
 
 #include <linux/lightsensor.h>
 
+// #define LOG_NDEBUG 0
+
 #include <cutils/log.h>
 
 #include "LightSensor.h"
 
-// #define LOG_NDEBUG 0
+#define TAG "[Light] "
 
 /*****************************************************************************/
 
@@ -102,6 +104,9 @@ int LightSensor::enable(int32_t handle, int en)
             err = write(fd, buf, sizeof(buf));
             close(fd);
             mEnabled = flags;
+            if (mEnabled) {
+                setInitialState();
+            }
             return 0;
         }
         return -1;
@@ -137,7 +142,7 @@ int LightSensor::readEvents(sensors_event_t* data, int count)
         if (type == EV_ABS) {
             if (event->code == EVENT_TYPE_LIGHT) {
                 if (event->value != -1) {
-                    LOGV("LightSensor: event (value=%d)", event->value);
+                    LOGV(TAG "event (value=%d)", event->value);
                     // FIXME: not sure why we're getting -1 sometimes
                     mPendingEvent.light = event->value;
                 }
@@ -150,7 +155,7 @@ int LightSensor::readEvents(sensors_event_t* data, int count)
                 numEventReceived++;
             }
         } else {
-            LOGE("LightSensor: unknown event (type=%d, code=%d)",
+            LOGE(TAG "unknown event (type=0x%x, code=0x%x)",
                     type, event->code);
         }
         mInputReader.next();

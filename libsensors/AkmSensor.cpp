@@ -23,12 +23,14 @@
 #include <sys/select.h>
 #include <dlfcn.h>
 
-#define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 
 #include <cutils/log.h>
 #include <cutils/properties.h>
 
 #include "AkmSensor.h"
+
+#define TAG "[AKM] "
 
 /*****************************************************************************/
 
@@ -87,10 +89,10 @@ AkmSensor::AkmSensor()
     mPendingEvents[MagneticField].type = SENSOR_TYPE_MAGNETIC_FIELD;
     mPendingEvents[MagneticField].magnetic.status = SENSOR_STATUS_ACCURACY_HIGH;
 
-    mPendingEvents[Orientation  ].version = sizeof(sensors_event_t);
-    mPendingEvents[Orientation  ].sensor = ID_O;
-    mPendingEvents[Orientation  ].type = SENSOR_TYPE_ORIENTATION;
-    mPendingEvents[Orientation  ].orientation.status = SENSOR_STATUS_ACCURACY_HIGH;
+    mPendingEvents[Orientation].version = sizeof(sensors_event_t);
+    mPendingEvents[Orientation].sensor = ID_O;
+    mPendingEvents[Orientation].type = SENSOR_TYPE_ORIENTATION;
+    mPendingEvents[Orientation].orientation.status = SENSOR_STATUS_ACCURACY_HIGH;
 
     // read the actual value of all sensors if they're enabled already
     struct input_absinfo absinfo;
@@ -151,6 +153,8 @@ int AkmSensor::enable(int32_t handle, int en)
 {
     int what = -1;
 
+    LOGV(TAG "%s(%d,%d)", __FUNCTION__, handle, en);
+
     switch (handle) {
         case ID_A: what = Accelerometer; break;
         case ID_M: what = MagneticField; break;
@@ -164,7 +168,7 @@ int AkmSensor::enable(int32_t handle, int en)
     int err = 0;
 
     if ((uint32_t(newState)<<what) != (mEnabled & (1<<what))) {
-        uint32_t sensor_type;
+        uint32_t sensor_type = SENSOR_TYPE_ACCELEROMETER;
         switch (what) {
             case Accelerometer: sensor_type = SENSOR_TYPE_ACCELEROMETER;  break;
             case MagneticField: sensor_type = SENSOR_TYPE_MAGNETIC_FIELD; break;
@@ -176,7 +180,7 @@ int AkmSensor::enable(int32_t handle, int en)
         else
             err = akm_disable_sensor(sensor_type);
 
-        LOGE_IF(err, "Could not change sensor state (%s)", strerror(-err));
+        LOGE_IF(err, TAG "Could not change sensor state (%s)", strerror(-err));
         if (!err) {
             mEnabled &= ~(1<<what);
             mEnabled |= (uint32_t(flags)<<what);
@@ -213,7 +217,7 @@ int AkmSensor::loadAKMLibrary()
         akm_enable_sensor = stub_enable_disable_sensor;
         akm_disable_sensor = stub_enable_disable_sensor;
         akm_set_delay = stub_set_delay;
-        LOGE("AkmSensor: unable to load AKM Library, %s", dlerror());
+        LOGE(TAG "unable to load AKM Library, %s", dlerror());
         return -ENOENT;
     }
 
@@ -259,7 +263,7 @@ int AkmSensor::readEvents(sensors_event_t* data, int count)
                 mInputReader.next();
             }
         } else {
-            LOGE("AkmSensor: unknown event (type=%d, code=%d)",
+            LOGE(TAG "unknown event (type=%d, code=%d)",
                     type, event->code);
             mInputReader.next();
         }
@@ -271,59 +275,65 @@ void AkmSensor::processEvent(int code, int value)
 {
     switch (code) {
         case EVENT_TYPE_ACCEL_X:
-            LOGV("AkmSensor: EVENT_TYPE_ACCEL_X value=%d", value);
+            LOGV(TAG "EVENT_TYPE_ACCEL_X value=%d", value);
             mPendingMask |= 1<<Accelerometer;
             mPendingEvents[Accelerometer].acceleration.x = value * CONVERT_A_X;
             break;
         case EVENT_TYPE_ACCEL_Y:
-            LOGV("AkmSensor: EVENT_TYPE_ACCEL_Y value=%d", value);
+            LOGV(TAG "EVENT_TYPE_ACCEL_Y value=%d", value);
             mPendingMask |= 1<<Accelerometer;
             mPendingEvents[Accelerometer].acceleration.y = value * CONVERT_A_Y;
             break;
         case EVENT_TYPE_ACCEL_Z:
-            LOGV("AkmSensor: EVENT_TYPE_ACCEL_Z value=%d", value);
+            LOGV(TAG "EVENT_TYPE_ACCEL_Z value=%d", value);
             mPendingMask |= 1<<Accelerometer;
             mPendingEvents[Accelerometer].acceleration.z = value * CONVERT_A_Z;
             break;
 
         case EVENT_TYPE_MAGV_X:
-            LOGV("AkmSensor: EVENT_TYPE_MAGV_X value=%d", value);
+            LOGV(TAG "EVENT_TYPE_MAGV_X value=%d", value);
             mPendingMask |= 1<<MagneticField;
             mPendingEvents[MagneticField].magnetic.x = value * CONVERT_M_X;
             break;
         case EVENT_TYPE_MAGV_Y:
-            LOGV("AkmSensor: EVENT_TYPE_MAGV_Y value=%d", value);
+            LOGV(TAG "EVENT_TYPE_MAGV_Y value=%d", value);
             mPendingMask |= 1<<MagneticField;
             mPendingEvents[MagneticField].magnetic.y = value * CONVERT_M_Y;
             break;
         case EVENT_TYPE_MAGV_Z:
-            LOGV("AkmSensor: EVENT_TYPE_MAGV_Z value=%d", value);
+            LOGV(TAG "EVENT_TYPE_MAGV_Z value=%d", value);
             mPendingMask |= 1<<MagneticField;
             mPendingEvents[MagneticField].magnetic.z = value * CONVERT_M_Z;
             break;
 
         case EVENT_TYPE_YAW:
-            LOGV("AkmSensor: EVENT_TYPE_YAW (orient) value=%d", value);
+            LOGV(TAG "EVENT_TYPE_YAW (orient) value=%d", value);
             mPendingMask |= 1<<Orientation;
             mPendingEvents[Orientation].orientation.azimuth = value * CONVERT_O_A;
             break;
         case EVENT_TYPE_PITCH:
-            LOGV("AkmSensor: EVENT_TYPE_PITCH (orient) value=%d", value);
+            LOGV(TAG "EVENT_TYPE_PITCH (orient) value=%d", value);
             mPendingMask |= 1<<Orientation;
             mPendingEvents[Orientation].orientation.pitch = value * CONVERT_O_P;
             break;
         case EVENT_TYPE_ROLL:
-            LOGV("AkmSensor: EVENT_TYPE_ROLL (orient) value=%d", value);
+            LOGV(TAG "EVENT_TYPE_ROLL (orient) value=%d", value);
             mPendingMask |= 1<<Orientation;
             mPendingEvents[Orientation].orientation.roll = value * CONVERT_O_R;
             break;
         case EVENT_TYPE_ORIENT_STATUS:
-            LOGV("AkmSensor: EVENT_TYPE_ORIENT_STATUS value=0x%x", value);
+        {
             uint8_t status = uint8_t(value & SENSOR_STATE_MASK);
+            //LOGV(TAG "EVENT_TYPE_ORIENT_STATUS value=0x%x -> 0x%x", value, status);
             if (status == 4)
                 status = 0;
             mPendingMask |= 1<<Orientation;
             mPendingEvents[Orientation].orientation.status = status;
             break;
+        }
+
+        default:
+            LOGW(TAG "Unknown event type=0x%x, value=0x%x", code, value);
     }
 }
+

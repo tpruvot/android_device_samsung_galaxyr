@@ -35,6 +35,8 @@
 #define FETCH_FULL_EVENT_BEFORE_RETURN 1
 #define IGNORE_EVENT_TIME 350000000
 
+#define TAG "[KXT] "
+
 /*****************************************************************************/
 
 KXTFSensor::KXTFSensor()
@@ -98,7 +100,7 @@ int KXTFSensor::setInitialState()
     }
 
     if (mHasPendingEvent) {
-        LOGD(LOG_TAG "[KXTF9] %s: %d %d %d -> %f %f %f", __FUNCTION__,
+        LOGD(TAG "%s: %d %d %d -> %f %f %f", __FUNCTION__,
                 absinfo_x.value, absinfo_y.value, absinfo_z.value,
                 mPendingEvent.data[0], mPendingEvent.data[1], mPendingEvent.data[2]);
     }
@@ -113,7 +115,7 @@ int KXTFSensor::enable(int32_t, int en)
         int fd;
         strcpy(&input_sysfs_path[input_sysfs_path_len], "enable");
 
-        LOGI(LOG_TAG "[KXTF9] %s(%d) %s", __FUNCTION__, en, input_sysfs_path);
+        LOGV(TAG "%s(%d) %s", __FUNCTION__, en, input_sysfs_path);
         fd = open(input_sysfs_path, O_RDWR);
         if (fd >= 0) {
             char buf[2];
@@ -131,7 +133,7 @@ int KXTFSensor::enable(int32_t, int en)
             setInitialState();
             return 0;
         }
-        LOGE(LOG_TAG "[KXTF9] %s(%d) failed, err %d", __FUNCTION__, en, errno);
+        LOGE(TAG "%s(%d) failed, err %d", __FUNCTION__, en, errno);
         return -1;
     }
     return 0;
@@ -200,7 +202,7 @@ again:
                 count--;
             }
         } else {
-            LOGE(LOG_TAG "[KXTF9] %s: unknown event (type=%d, code=%d)",
+            LOGE(TAG "%s: unknown event (type=%d, code=%d)",
                     __FUNCTION__, type, event->code);
         }
         mInputReader.next();
@@ -217,7 +219,7 @@ again:
 #endif
 
     if (mHasPendingEvent) {
-        LOGV(LOG_TAG "[KXTF9] %s: %d %d %d -> %f %f %f", __FUNCTION__,
+        LOGV(TAG "%s: %d %d %d -> %f %f %f", __FUNCTION__,
                 absinfo_x.value, absinfo_y.value, absinfo_z.value,
                 mPendingEvent.data[0], mPendingEvent.data[1], mPendingEvent.data[2]);
     }

@@ -29,6 +29,9 @@
 
 #define FETCH_FULL_EVENT_BEFORE_RETURN 0
 #define IGNORE_EVENT_TIME 350000000
+
+#define TAG "[MPU] "
+
 /*****************************************************************************/
 
 GyroSensor::GyroSensor()
@@ -83,7 +86,7 @@ int GyroSensor::enable(int32_t, int en) {
         int fd;
         strcpy(&input_sysfs_path[input_sysfs_path_len], "enable");
 
-        LOGI(LOG_TAG ": %s %s", __FUNCTION__, input_sysfs_path);
+        LOGV(TAG "%s(%d) %s", __FUNCTION__, en, input_sysfs_path);
         fd = open(input_sysfs_path, O_RDWR);
         if (fd >= 0) {
             char buf[2];
@@ -101,7 +104,7 @@ int GyroSensor::enable(int32_t, int en) {
             setInitialState();
             return 0;
         }
-        LOGE(LOG_TAG ": %s enable failed, err %d", __FUNCTION__, errno);
+        LOGE(TAG "%s enable failed, err %d", __FUNCTION__, errno);
         return -1;
     }
     return 0;
@@ -170,7 +173,7 @@ again:
                 count--;
             }
         } else {
-            LOGE("GyroSensor: unknown event (type=%d, code=%d)",
+            LOGE(TAG "unknown event (type=0x%x, code=0x%x)",
                     type, event->code);
         }
         mInputReader.next();
