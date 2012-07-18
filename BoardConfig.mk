@@ -69,13 +69,15 @@ TARGET_PROVIDES_LIBAUDIO := false # We must build it.
 
 # Camera
 # USE_CAMERA_STUB := true
-BOARD_VENDOR_USE_NV_CAMERA := true
 BOARD_CAMERA_USE_GETBUFFERINFO := true
 #BOARD_USE_CAF_LIBCAMERA := true
 BOARD_USE_CAF_LIBCAMERA_GB_REL := true
 TARGET_SPECIFIC_HEADER_PATH := device/samsung/galaxyr
-BOARD_CAMERA_LIBRARIES := libcamera
 BOARD_SECOND_CAMERA_DEVICE := true
+
+ifeq ($(USE_CAMERA_STUB),false)
+BOARD_CAMERA_LIBRARIES := libcamera
+endif
 
 # Graphics
 BOARD_EGL_CFG := device/samsung/galaxyr/configs/egl.cfg
@@ -85,6 +87,7 @@ USE_OPENGL_RENDERER := true
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
 #BOARD_FORCE_STATIC_A2DP := true
+BOARD_CUSTOM_BLUEDROID := ../../../device/samsung/galaxyr/bluetooth.c
 
 # Mobile data
 BOARD_MOBILEDATA_INTERFACE_NAME := "rmnet0"
