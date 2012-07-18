@@ -30,8 +30,6 @@
 
 #define TAG "[NCT] "
 
-#define IGNORE_EVENT_TIME 35000000
-
 /*****************************************************************************/
 
 NctSensor::NctSensor()
@@ -75,7 +73,6 @@ int NctSensor::readSysFsValue(void) {
         read(fd, &buf[0], sizeof(buf));
 
         int nr = sscanf(buf, "%d", &absinfo.value);
-
         if (nr >= 0) {
             LOGV(TAG "%s read=%d", __FUNCTION__, absinfo.value);
             mPendingEvent.timestamp = getTimestamp();
@@ -100,10 +97,15 @@ int NctSensor::enable(int32_t, int en) {
 
     if (flags != mEnabled) {
         mEnabled = flags;
-    }
-
-    if (mEnabled) {
-        readSysFsValue();
+        if (mEnabled) {
+            if (getFd() > 0)
+                readSysFsValue();
+            else {
+                mEnabled = false;
+                LOGW(TAG "unable to enable the sensor");
+                return -EIO;
+            }
+        }
     }
     return 0;
 }
@@ -121,16 +123,13 @@ int NctSensor::readEvents(sensors_event_t* data, int count)
 
     readSysFsValue();
 
-    while (count && mHasPendingEvent) {
+    while (count) {
         LOGV(TAG "%s has pending data", __FUNCTION__);
         if (mEnabled) {
-            if (mPendingEvent.timestamp >= mEnabledTime) {
                 *data++ = mPendingEvent;
                 numRecords++;
-            }
-            count--;
-            mHasPendingEvent = false;
         }
+        count--;
     }
     return mEnabled ? numRecords : 0;
 }

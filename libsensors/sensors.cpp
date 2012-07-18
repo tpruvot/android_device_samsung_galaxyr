@@ -65,18 +65,12 @@
 #define SENSORS_GYROSCOPE_HANDLE        (SENSORS_HANDLE_BASE + SENSOR_TYPE_GYROSCOPE)
 #define SENSORS_TEMPERATURE_HANDLE      (SENSORS_HANDLE_BASE + SENSOR_TYPE_TEMPERATURE)
 
-#if 0
-#define SENSORS_ACCELERATION_HANDLE     0
-#define SENSORS_MAGNETIC_FIELD_HANDLE   1
-#define SENSORS_ORIENTATION_HANDLE      2
-#define SENSORS_LIGHT_HANDLE            3
-#define SENSORS_PROXIMITY_HANDLE        4
-#define SENSORS_GYROSCOPE_HANDLE        5
-#endif
-
 #define AKM_FTRACE 0
 #define AKM_DEBUG 0
 #define AKM_DATA 0
+
+//#define USE_MPU
+#define USE_NCT
 
 /*****************************************************************************/
 
@@ -86,10 +80,12 @@ static struct sensor_t sSensorList[] = {
       1, SENSORS_LIGHT_HANDLE,
         SENSOR_TYPE_LIGHT, 10240.0f, 1.0f, 0.75f, 0, { }
     },
-    { "CM3663 Proximity sensor", "Capella Microsystems",
-      1, SENSORS_PROXIMITY_HANDLE,
-        SENSOR_TYPE_PROXIMITY, 5.0f, 5.0f, 0.75f, 0, { }
+#if USE_ORIENT
+    { "AK8975 Orientation sensor", "Asahi Kasei Microdevices",
+      1, SENSORS_ORIENTATION_HANDLE,
+          SENSOR_TYPE_ORIENTATION, 360.0f, CONVERT_O, 7.8f, 100000, { }
     },
+#endif
     { "KXTF9 3-axis Accelerometer", "Kyonix",
       1, SENSORS_ACCELERATION_HANDLE,
           SENSOR_TYPE_ACCELEROMETER, RANGE_A, CONVERT_A, 0.23f, 100000, { }
@@ -97,19 +93,21 @@ static struct sensor_t sSensorList[] = {
     { "AK8975 3-axis Magnetic field sensor", "Asahi Kasei Microdevices",
       1, SENSORS_MAGNETIC_FIELD_HANDLE, SENSOR_TYPE_MAGNETIC_FIELD, 2000.0f, CONVERT_M, 6.8f, 100000, { }
     },
-    { "AK8975 Orientation sensor", "Asahi Kasei Microdevices",
-      1, SENSORS_ORIENTATION_HANDLE,
-          SENSOR_TYPE_ORIENTATION, 360.0f, CONVERT_O, 7.8f, 100000, { }
-    },
 #ifdef USE_MPU
     { "MPU3050 Gyroscope sensor", "InvenSense",
       1, SENSORS_GYROSCOPE_HANDLE,
           SENSOR_TYPE_GYROSCOPE, RANGE_GYRO, CONVERT_GYRO, 6.1f, 0, { }
     },
 #endif
+#ifdef USE_NCT
     { "NCT1008 Battery Temperature", "ON Semiconductor",
       1, SENSORS_TEMPERATURE_HANDLE,
           SENSOR_TYPE_TEMPERATURE, 127.0f, 1.0f, 0.240f, 500000, { }
+    },
+#endif
+    { "CM3663 Proximity sensor", "Capella Microsystems",
+      1, SENSORS_PROXIMITY_HANDLE,
+        SENSOR_TYPE_PROXIMITY, 5.0f, 5.0f, 0.75f, 0, { }
     },
 };
 
@@ -156,13 +154,15 @@ struct sensors_poll_context_t {
 private:
     enum {
         light           = 0,
-        proximity,
+#ifdef USE_MPU
+        mpu,
+#endif
         kxt,
         akm,
+#ifdef USE_NCT
         nct,
-#ifdef USE_MPU
-        gyro,
 #endif
+        proximity,
         numSensorDrivers,
         numFds,
     };
@@ -186,10 +186,12 @@ private:
                 return light;
 #ifdef USE_MPU
             case ID_GY:
-                return gyro;
+                return mpu;
 #endif
+#ifdef USE_NCT
             case ID_T:
                 return nct;
+#endif
         }
         return -EINVAL;
     }
@@ -204,10 +206,12 @@ sensors_poll_context_t::sensors_poll_context_t()
     mPollFds[light].events = POLLIN;
     mPollFds[light].revents = 0;
 
-    mSensors[proximity] = new ProximitySensor();
-    mPollFds[proximity].fd = mSensors[proximity]->getFd();
-    mPollFds[proximity].events = POLLIN;
-    mPollFds[proximity].revents = 0;
+#ifdef USE_MPU
+    mSensors[mpu] = new GyroSensor();
+    mPollFds[mpu].fd = mSensors[mpu]->getFd();
+    mPollFds[mpu].events = POLLIN;
+    mPollFds[mpu].revents = 0;
+#endif
 
     mSensors[kxt] = new KXTFSensor();
     mPollFds[kxt].fd = mSensors[kxt]->getFd();
@@ -219,17 +223,17 @@ sensors_poll_context_t::sensors_poll_context_t()
     mPollFds[akm].events = POLLIN;
     mPollFds[akm].revents = 0;
 
-#ifdef USE_MPU
-    mSensors[gyro] = new GyroSensor();
-    mPollFds[gyro].fd = mSensors[gyro]->getFd();
-    mPollFds[gyro].events = POLLIN;
-    mPollFds[gyro].revents = 0;
-#endif
-
+#ifdef USE_NCT
     mSensors[nct] = new NctSensor();
     mPollFds[nct].fd = mSensors[nct]->getFd();
     mPollFds[nct].events = POLLIN;
     mPollFds[nct].revents = 0;
+#endif
+
+    mSensors[proximity] = new ProximitySensor();
+    mPollFds[proximity].fd = mSensors[proximity]->getFd();
+    mPollFds[proximity].events = POLLIN;
+    mPollFds[proximity].revents = 0;
 
     int wakeFds[2];
     int result = pipe(wakeFds);
