@@ -273,6 +273,7 @@ on boot
     chown system system /sys/class/sec/sec_s5k4ecgx/cameraflash
     chown system system /sys/class/sec/sec_s5k4ecgx/camtype
     chown system system /sys/class/sec/sec_s5k6aafx/camtype
+    chmod 0666 /sys/class/sec/sec_s5k4ecgx/cameraflash
 
     # Vibrator
     chmod 0666 /dev/tspdrv
@@ -406,10 +407,10 @@ service bt_dut_cmd /system/bin/bcm_dut
     oneshot
 
 # triggered by holding down both volume keys + power
+# doesnt work yet... even with keychord kernel support
 service reboot_key /system/bin/toolbox reboot
-    user system
     oneshot
-    keycodes 115 107
+    keycodes 114 115 107
     disabled
 
 ##############################################################################
