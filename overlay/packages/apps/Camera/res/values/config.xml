@@ -22,6 +22,15 @@
 	<string name="touchFocusParameter">touch-focus</string>
 	<bool name="touchFocusNeedsRect">false</bool>
 
+        <!-- Samsung Camcorder Mode -->
+        <bool name="needsSamsungCamMode">true</bool>
+
+        <!-- Samsung Continuous Autofocus -->
+        <bool name="needsSamsungContinuousAf">true</bool>
+
+        <!-- Samsung Special Settings -->
+        <bool name="needsSamsungSpecialSettings">true</bool>
+
 	<!-- FFC parameter filtering -->
 	<bool name="ffc_canFocus">false</bool>
 	<bool name="ffc_canZoom">false</bool>
