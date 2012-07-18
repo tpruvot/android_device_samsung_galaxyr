@@ -60,6 +60,9 @@ ro.product.locale.region=GB
 # Enable detailed GC data and SMP dexopt
 dalvik.vm.dexopt-flags=m=y,u=n
 
+# Scrolling cache 0:enable, 1:default enable, 2:default disable, 3:disable
+persist.sys.scrollingcache=2
+
 # Forbid format of these partitions in mount menu :
 ro.cwm.forbid_format=/misc,/radio,/recovery,/efs
 
