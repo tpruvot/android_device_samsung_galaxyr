@@ -34,9 +34,6 @@ ro.wifi-ap.fw-path=/etc/bcm4330_aps.bin
 # To fix the tethering, eth0 should not be listed here
 mobiledata.interfaces=rmnet0
 
-# BT mac address
-ro.bt.bdaddr_path=/efs/imei/bt.txt
-
 # Time between scans in seconds. Keep it high to minimize battery drain.
 # This only affects the case in which there are remembered access points,
 # but none are in range.
