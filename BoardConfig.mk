@@ -61,7 +61,9 @@ TARGET_NO_RADIOIMAGE := true
 
 # RIL
 BOARD_USES_LIBSECRIL_STUB := true
-BOARD_MOBILEDATA_INTERFACE_NAME := "pdp0"
+
+# 3G
+BOARD_MOBILEDATA_INTERFACE_NAME := "rmnet0"
 
 # Audio
 BOARD_USES_GENERIC_AUDIO := false
@@ -89,9 +91,6 @@ BOARD_HAVE_BLUETOOTH_BCM := true
 #BOARD_FORCE_STATIC_A2DP := true
 BOARD_CUSTOM_BLUEDROID := ../../../device/samsung/galaxyr/bluetooth.c
 
-# Mobile data
-BOARD_MOBILEDATA_INTERFACE_NAME := "rmnet0"
-
 # FM Radio
 BOARD_HAVE_FM_RADIO := true
 BOARD_GLOBAL_CFLAGS += -DHAVE_FM_RADIO
@@ -100,9 +99,6 @@ BOARD_FM_DEVICE := si4709
 # Akmd
 BOARD_VENDOR_USE_AKMD := akm8973
 BUILD_AKMD := true
-
-# Vibrator
-#BOARD_HAS_VIBRATOR_IMPLEMENTATION := ../../device/samsung/c1-common/vibrator/tspdrv.c
 
 # GPS
 BOARD_USES_GPSWRAPPER := true
