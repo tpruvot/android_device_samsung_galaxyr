@@ -58,6 +58,7 @@ PRODUCT_PACKAGES += \
     make_ext4fs \
     setup_fs
 
+# HAL
 PRODUCT_PACKAGES += \
     sensors.n1 \
     sensors.tegra \
@@ -66,6 +67,11 @@ PRODUCT_PACKAGES += \
     gps.n1 \
     gralloc.tegra \
     overlay.tegra
+
+# Other cmdline tools
+PRODUCT_PACKAGES += \
+    bdaddr_read \
+
 
 PRODUCT_PACKAGES += RomUpdater DroidSSHd
 
@@ -78,7 +84,9 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/ueventd.n1.rc:root/ueventd.n1.rc
 
 # debug purpose...
-PRODUCT_COPY_FILES += device/samsung/galaxyr/configs/init.rc:root/init.rc
+ifeq ($(TARGET_PROVIDES_INIT_RC),true)
+    PRODUCT_COPY_FILES += device/samsung/galaxyr/configs/init.rc:root/init.rc
+endif
 
 # Prebuilt modules
 PRODUCT_COPY_FILES += \
@@ -232,10 +240,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
-
-# Set default USB interface
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    persist.sys.usb.config=mass_storage
 
 PRODUCT_LOCALES += hdpi
 

@@ -147,9 +147,8 @@ on boot
     chown bluetooth bluetooth /sys/class/rfkill/rfkill2/type
     chmod 6755 /system/bin/bcm_dut
 
-    # bluetooth MAC address programming
-    setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
-    chown bluetooth bluetooth /efs/bluetooth/bt_addr
+    # bluetooth MAC address programming (set ro.bt.bdaddr_path)
+    exec /system/bin/bdaddr_read
 
     # UART/USB path switching
     chown system radio /sys/devices/platform/i2c-gpio.11/i2c-11/11-0025/uartsel
@@ -228,6 +227,11 @@ on boot
 
     chown root system /sys/devices/virtual/usb_composite/accessory/enable
     chmod 0664 /sys/devices/virtual/usb_composite/accessory/enable
+
+    chown root mount /sys/devices/platform/usb_mass_storage/lun0/file
+    chown root mount /sys/devices/platform/usb_mass_storage/lun1/file
+    chmod 0664 /sys/devices/platform/usb_mass_storage/lun0/file
+    chmod 0664 /sys/devices/platform/usb_mass_storage/lun1/file
 
     # emmc checksum
     chown system radio /sys/class/sec/sec_misc/emmc_checksum_done
