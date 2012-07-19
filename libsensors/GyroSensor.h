@@ -40,6 +40,8 @@ class GyroSensor : public SensorBase {
     int64_t mEnabledTime;
 
     int setInitialState();
+protected:
+    int sec_power(int en);
 
 public:
             GyroSensor();

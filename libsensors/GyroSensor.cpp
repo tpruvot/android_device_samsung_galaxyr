@@ -80,6 +80,33 @@ int GyroSensor::setInitialState() {
     return 0;
 }
 
+int GyroSensor::sec_power(int en) {
+    int flags = en ? 1 : 0;
+    if (flags != mEnabled) {
+        int fd;
+        char sec_sysfs[] = "/sys/class/sec/sec_mpu3050/gyro_power_on";
+
+        LOGV(TAG "%s(%d) %s", __FUNCTION__, en, sec_sysfs);
+        fd = open(input_sysfs_path, O_RDWR);
+        if (fd >= 0) {
+            char buf[2];
+            int err;
+            buf[1] = 0;
+            if (flags) {
+                buf[0] = '1';
+            } else {
+                buf[0] = '0';
+            }
+            err = write(fd, buf, sizeof(buf));
+            close(fd);
+            return 0;
+        }
+        LOGE(TAG "%s failed, err %d", __FUNCTION__, errno);
+        return -1;
+    }
+    return 0;
+}
+
 int GyroSensor::enable(int32_t, int en) {
     int flags = en ? 1 : 0;
     if (flags != mEnabled) {
@@ -93,6 +120,7 @@ int GyroSensor::enable(int32_t, int en) {
             int err;
             buf[1] = 0;
             if (flags) {
+                sec_power(flags);
                 buf[0] = '1';
                 mEnabledTime = getTimestamp() + IGNORE_EVENT_TIME;
             } else {
