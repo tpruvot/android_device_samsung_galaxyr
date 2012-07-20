@@ -179,11 +179,13 @@ adb pull /system/etc/firmware/nvmm_wmaprodec.axf ../../../vendor/$MANUFACTURER/$
 adb pull /system/etc/firmware/nvrm_avp.bin ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
 
 # Other files
+adb pull /system/bin/charging_mode ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/playsound ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/immvibed_n1 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/drexe ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/npsmobex ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libsisodrm.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/charging_mode
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/playsound
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/immvibed_n1
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/drexe
@@ -361,6 +363,7 @@ PRODUCT_COPY_FILES += \\
 
 # Other files
 PRODUCT_COPY_FILES += \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/charging_mode:system/bin/charging_mode \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/playsound:system/bin/playsound \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/immvibed_n1:system/bin/immvibed_n1 \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/drexe:system/bin/drexe \\
