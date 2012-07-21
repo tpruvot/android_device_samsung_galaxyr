@@ -1,21 +1,23 @@
-/dev/knvmap		0660	system	system
-/dev/nvmap		0666	system	system
-/dev/tegra_avp		0660	media	media
-/dev/tegra_rpc		0660	media	media
-/dev/tegra_sema		0660	media	media
-/dev/tegra_mediaserver  0660    media   media
-/dev/s5k4ecgx		0660	media	camera
-/dev/s5k6aafx		0660	media	camera
-/dev/tegra_cam* 	0660	media	camera
-/dev/tegra_dc*		0666	system	system
+/dev/keychord           0660    system  input
 
-/dev/smdctl		0660	system	radio
-/dev/smddown		0660	system	radio
-/dev/smdipc		0660	system	radio
-/dev/smdrfs		0660	system	radio
-/dev/smdcsd		0660	system	radio
-/dev/block/mmcblk0p7	0660	system	radio
-/dev/block/mmcblk0p5	0660	system	radio
+/dev/knvmap             0660    system  system
+/dev/nvmap              0666    system  system
+/dev/tegra_avp          0660    media   media
+/dev/tegra_rpc          0660    media   media
+/dev/tegra_sema         0660    media   media
+/dev/tegra_mediaserver  0660    media   graphics
+/dev/s5k4ecgx           0660    media   camera
+/dev/s5k6aafx           0660    media   camera
+/dev/tegra_cam*         0660    media   camera
+/dev/tegra_dc*          0666    system  graphics
+
+/dev/smdctl             0660    system  radio
+/dev/smddown            0660    system  radio
+/dev/smdipc             0660    system  radio
+/dev/smdrfs             0660    system  radio
+/dev/smdcsd             0660    system  radio
+/dev/block/mmcblk0p7    0660    system  radio
+/dev/block/mmcblk0p5    0660    system  radio
 
 #for HSPA RIL
 /dev/umts_boot0         0660    radio radio
@@ -25,21 +27,19 @@
 /dev/umts_ramdump0      0660    radio radio
 
 # GPS (and loc)
-/dev/ttyHS0	0660	radio gps
+/dev/ttyHS0     0660    radio gps
 
 /dev/fmradio    0666    media system
 
 /dev/bthid      0660    bluetooth input
 
 # Sensors
-/dev/mpu	0660	compass system
-/dev/mpuirq	0660	compass system
-/dev/accelirq   0660    compass system
-/dev/compassirq 0660    compass system
+/dev/mpu*       0660    compass compass
+/dev/accelirq   0660    compass compass
+/dev/compassirq 0660    compass compass
 /dev/timerirq   0660    compass system
 /dev/kxtf9      0660    compass system
 /dev/akm897*    0664    compass system
-
 
 /dev/ttyGS0     0660    radio   radio
 /dev/ttyHS0     0660    radio   radio
@@ -51,7 +51,7 @@
 # for usb printer
 /dev/usb/lp*    0660    system  usb
 
-/sys/devices/platform/tegra-ehci.1/ehci_power 0666 system radio
+/sys/devices/platform/tegra-ehci.* ehci_power 0666 system radio
 
 # for usb device
 /dev/bus/usb/*    0660   system       usb
