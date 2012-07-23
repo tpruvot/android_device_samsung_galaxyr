@@ -1,0 +1,21 @@
+assert(getprop("ro.product.device") == "galaxyr" || getprop("ro.build.product") == "galaxyr" || getprop("ro.product.board") == "galaxyr" || 
+       getprop("ro.product.device") == "GT-I9103" || getprop("ro.build.product") == "GT-I9103" || getprop("ro.product.board") == "GT-I9103");
+
+ui_print("--------------------------------------------");
+ui_print("+ [GalaxyR] CWM Based Recovery for CM7.2   +");
+ui_print("--------------------------------------------");
+
+show_progress(0.100000, 0);
+
+ui_print("Updating recovery...");
+assert(package_extract_file("recovery.img", "/dev/block/mmcblk0p8"));
+
+show_progress(0.500000, 0);
+
+run_program("/sbin/busybox", "sync");
+
+show_progress(0.300000, 0);
+
+
+ui_print("Done!");
+

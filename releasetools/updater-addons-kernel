@@ -1,0 +1,24 @@
+assert(getprop("ro.product.device") == "galaxyr" || getprop("ro.build.product") == "galaxyr" || getprop("ro.product.board") == "galaxyr" || 
+       getprop("ro.product.device") == "GT-I9103" || getprop("ro.build.product") == "GT-I9103" || getprop("ro.product.board") == "GT-I9103");
+
+ui_print("--------------------------------------------");
+ui_print("+ [GalaxyR] CM7.2 kernel                   +");
+ui_print("--------------------------------------------");
+
+show_progress(0.100000, 0);
+
+ui_print("Updating kernel...");
+assert(package_extract_file("boot.img", "/dev/block/mmcblk0p9"));
+
+ui_print("Wipe Cache...");
+mount("ext4", "EMMC", "/dev/block/mmcblk0p6", "/data");
+show_progress(0.500000, 0);
+delete_recursive("/data/dalvik-cache");
+
+run_program("/sbin/busybox", "sync");
+
+show_progress(0.300000, 0);
+
+
+ui_print("Done!");
+
