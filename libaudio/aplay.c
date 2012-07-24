@@ -77,11 +77,11 @@ int play_file(unsigned rate, unsigned channels, int fd, unsigned count)
         return -1;
     }
 
-    while (read(fd, data, bufsize) == bufsize) {
+    while (read(fd, data, bufsize) == (int32_t) bufsize) {
         if (pcm_write(pcm, data, bufsize))
             break;
         
-            /* HACK: remove */
+        /* HACK: remove */
         if (ctl) {
             //mixer_ctl_select(ctl, "SPK");
             ctl = 0;

@@ -98,7 +98,7 @@ AudioHardware::AudioHardware() :
     mActivatedCP(false),
 #ifdef HAVE_FM_RADIO
     mFmFd(-1),
-    mFmVolume(1),
+    mFmVolume(7),
     mFmResumeAfterCall(false),
 #endif
     mDriverOp(DRV_NONE)
@@ -634,22 +634,6 @@ status_t AudioHardware::setMasterVolume(float volume)
     return -1;
 }
 
-#ifdef HAVE_FM_RADIO
-status_t AudioHardware::setFmVolume(float v)
-{
-    mFmVolume = v;
-    if (mFmFd > 0) {
-        __u8 fmVolume = (AudioSystem::logToLinear(v) + 5) / 7;
-        LOGD("%s %f %d", __func__, v, (int) fmVolume);
-        if (ioctl(mFmFd, Si4709_IOC_VOLUME_SET, &fmVolume) < 0) {
-            LOGE("set_volume_fm error.");
-            return -EIO;
-        }
-    }
-    return NO_ERROR;
-}
-#endif
-
 static const int kDumpLockRetries = 50;
 static const int kDumpLockSleep = 20000;
 
@@ -791,6 +775,29 @@ status_t AudioHardware::setIncallPath_l(uint32_t device)
 }
 
 #ifdef HAVE_FM_RADIO
+status_t AudioHardware::setFmVolume(float v)
+{
+    mFmVolume = v;
+    int ret = 0;
+    if (mFmFd == -1) {
+        disableFMRadio();
+        enableFMRadio();
+    }
+    if (mFmFd > 0) {
+        __u8 fmVolume = (AudioSystem::logToLinear(v) + 5); /// 7;
+        LOGD("%s %f %d", __func__, v, (int) fmVolume);
+        ret = ioctl(mFmFd, Si4709_IOC_VOLUME_SET, &fmVolume);
+        if (ret < 0) {
+            LOGE("set_volume_fm error. ret=%d", ret);
+            return -EIO;
+        }
+    } else {
+        LOGW("FM device not opened ! mFmFd=%d", mFmFd);
+        return -EIO;
+    }
+    return NO_ERROR;
+}
+
 void AudioHardware::enableFMRadio() {
     LOGV("AudioHardware::enableFMRadio() Turning FM Radio ON");
 
@@ -809,7 +816,7 @@ void AudioHardware::enableFMRadio() {
         }
 
         if (mFmFd < 0) {
-            mFmFd = open("/dev/radio0", O_RDWR);
+            mFmFd = open("/dev/fmradio", O_RDWR);
             // In case setFmVolume was called before FM was enabled, we save the volume and call it here.
             setFmVolume(mFmVolume);
         }
@@ -848,7 +855,7 @@ status_t AudioHardware::setFMRadioPath_l(uint32_t device)
     LOGV("setFMRadioPath_l() device %x", device);
 
     AudioPath path;
-    const char *fmpath;
+    const char *fmpath = "FMR_HP";
 
     if (device != AudioSystem::DEVICE_OUT_SPEAKER && (device & AudioSystem::DEVICE_OUT_SPEAKER) != 0) {
         /* Fix the case where we're on headset and the system has just played a 
@@ -885,7 +892,7 @@ status_t AudioHardware::setFMRadioPath_l(uint32_t device)
     if (mMixer != NULL) {
         LOGV("setFMRadioPath_l() mixer is open");
         TRACE_DRIVER_IN(DRV_MIXER_GET)
-        struct mixer_ctl *ctl= mixer_get_control(mMixer, "FM Radio Path", 0);
+        struct mixer_ctl *ctl= mixer_get_control(mMixer, "FM radio", 0); //"FM Radio Path", 0);
         TRACE_DRIVER_OUT
 
         if (ctl != NULL) {

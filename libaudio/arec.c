@@ -68,8 +68,8 @@ int record_file(unsigned rate, unsigned channels, int fd, unsigned count)
     }
 
     while (!pcm_read(pcm, data, bufsize)) {
-        if (write(fd, data, bufsize) != bufsize) {
-            fprintf(stderr,"could not write %d bytes\n", bufsize);
+        if (write(fd, data, bufsize) != (int32_t) bufsize) {
+            fprintf(stderr,"could not write %u bytes\n", bufsize);
             return -1;
         }
     }
