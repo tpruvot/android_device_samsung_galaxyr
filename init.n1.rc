@@ -18,6 +18,7 @@ on init
     chown system nobody /tmp
 
     write /sys/class/firmware/timeout 5
+    write /sys/class/usb_composite/usb_mass_storage/enable 0
 
     mkdir /efs 0771 system system
 
