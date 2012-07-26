@@ -45,6 +45,9 @@ BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fo
 # kernel modules location (busybox)
 KERNEL_MODULES_DIR := /lib/modules
 
+# required to remove kernel modules, recovery size is limited to 5.2MB
+BOARD_RECOVERY_RAMDISK_EXTRA_SCRIPT := device/samsung/galaxyr/releasetools/recovery_ramdisk.sh
+
 # Filesystem
 BOARD_BOOTIMAGE_PARTITION_SIZE     := 8388608
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 5242880
