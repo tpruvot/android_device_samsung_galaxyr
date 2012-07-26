@@ -1,4 +1,5 @@
-assert(getprop("ro.product.device") == "galaxyr" || getprop("ro.build.product") == "galaxyr" || getprop("ro.product.board") == "galaxyr" || 
+assert(getprop("ro.product.device") == "galaxyr" || getprop("ro.build.product") == "galaxyr" || getprop("ro.product.board") == "galaxyr" ||
+       getprop("ro.hardware") == "n1" || getprop("ro.product.device") == "i9103" || getprop("ro.build.product") == "i9103" ||
        getprop("ro.product.device") == "GT-I9103" || getprop("ro.build.product") == "GT-I9103" || getprop("ro.product.board") == "GT-I9103");
 
 ui_print("--------------------------------------------");
