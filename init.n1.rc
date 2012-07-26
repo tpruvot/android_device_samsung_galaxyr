@@ -86,7 +86,7 @@ on boot
     setprop softap.interface wl0.1
     setprop wifi.ap.interface wl0.1
 
-    setprop service.adb.root 1
+    # setprop service.adb.root 1
 
     # required to start the ril
     chown radio radio /sys/devices/platform/tegra-ehci.1/ehci_power
