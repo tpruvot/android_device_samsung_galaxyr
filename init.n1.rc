@@ -42,7 +42,7 @@ on fs
     chmod 0775 /efs/bluetooth
 
     # SEC_DMCRYPT efs or cache or lfs partition required
-    exec apply_sec_devenc_init
+    # exec apply_sec_devenc_init
 
     mount ext4 /dev/block/mmcblk0p2 /system wait ro
 
@@ -51,14 +51,8 @@ on fs
     mount ext4 /dev/block/mmcblk0p6 /data nosuid nodev noatime wait crypt discard,noauto_da_alloc
     mount ext4 /dev/block/mmcblk0p3 /cache nosuid nodev noatime wait
 
-    # mount EFS partition
-    #mount ext3 /dev/block/mmcblk0p1 /efs nosuid nodev
-    #chown system radio /efs
-    #chmod 0775 /efs
-    #chmod 0775 /efs/bluetooth
-
     # add booting sound property
-    setprop audioflinger.bootsnd 1
+    # setprop audioflinger.bootsnd 1
 
 on post-fs
 
