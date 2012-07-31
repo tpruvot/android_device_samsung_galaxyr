@@ -53,6 +53,9 @@
 
 /sys/devices/platform/tegra-ehci.* ehci_power 0666 system radio
 
+/sys/class/rfkill/rfkill* state 0644 system bluetooth
+/sys/class/rfkill/rfkill* type  0664 system bluetooth
+
 # for usb device
 /dev/bus/usb/*    0660   system       usb
 

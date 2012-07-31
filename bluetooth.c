@@ -255,7 +255,7 @@ static int do_chip_disable()
     if (hci_sock < 0) goto out;
     ioctl(hci_sock, HCIDEVDOWN, HCI_DEV_ID);
 
-     LOGI("Stopping hciattach deamon");
+    LOGI("Stopping hciattach deamon");
     if (property_set("ctl.stop", "hciattach") < 0) {
         LOGE("Error stopping hciattach");
         goto out;

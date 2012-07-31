@@ -45,7 +45,7 @@ BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fo
 # kernel modules location (busybox)
 KERNEL_MODULES_DIR := /lib/modules
 
-# required to remove kernel modules, recovery size is limited to 5.2MB
+# required to remove kernel modules, recovery size is limited to 5MB
 BOARD_RECOVERY_RAMDISK_EXTRA_SCRIPT := device/samsung/galaxyr/releasetools/recovery_ramdisk.sh
 
 # Filesystem
@@ -80,6 +80,15 @@ BOARD_USE_CAF_LIBCAMERA_GB_REL := true
 TARGET_SPECIFIC_HEADER_PATH := device/samsung/galaxyr
 BOARD_SECOND_CAMERA_DEVICE := true
 
+BOARD_USES_HW_MEDIARECORDER := false
+BOARD_USES_HW_MEDIASCANNER := false
+BOARD_USES_HW_MEDIAPLUGINS := false
+
+TARGET_OVERLAY_ALWAYS_DETERMINES_FORMAT := true
+TARGET_USES_GL_VENDOR_EXTENSIONS := true
+TARGET_ELECTRONBEAM_FRAMES := 15
+BOARD_USE_SCREENCAP := true
+
 ifeq ($(USE_CAMERA_STUB),false)
 BOARD_CAMERA_LIBRARIES := libcamera
 endif
@@ -91,8 +100,13 @@ USE_OPENGL_RENDERER := true
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
-#BOARD_FORCE_STATIC_A2DP := true
-BOARD_CUSTOM_BLUEDROID := ../../../device/samsung/galaxyr/bluetooth.c
+BOARD_FORCE_STATIC_A2DP := true
+#BOARD_CUSTOM_BLUEDROID := ../../../device/samsung/galaxyr/bluetooth.c
+#BOARD_HAVE_BLUETOOTH_CSR := true
+BOARD_HAVE_BLUETOOTH_BCM_BTLA := true
+BT_ALT_STACK := true
+BRCM_BT_USE_BTL_IF := true
+BRCM_BTL_INCLUDE_A2DP := true
 
 # FM Radio
 BOARD_HAVE_FM_RADIO := true
