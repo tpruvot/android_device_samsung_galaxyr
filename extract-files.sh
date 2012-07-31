@@ -19,6 +19,8 @@
 DEVICE=galaxyr
 MANUFACTURER=samsung
 
+# if [ ! -d ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw ]; then
+
 # HAL
 mkdir -p ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw
 adb pull /system/lib/hw/gralloc.tegra.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/lib/hw/
@@ -86,7 +88,6 @@ adb pull /system/lib/libext2_blkid.so ../../../vendor/$MANUFACTURER/$DEVICE/prop
 adb pull /system/lib/libext2_com_err.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libext2_e2p.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libext2_uuid.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
-chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/vold
 
 # WIFI
 adb pull /system/bin/BCM4330B1_002.001.003.0221.0263.hcd ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/BCM4330B1_002.001.003.0221.0263.hcd
@@ -101,11 +102,13 @@ adb pull /system/bin/btld ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/wlandutservice ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/macloader ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/mfgloader ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/bin/nv_hciattach ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/etc/wifi/wl ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/btld
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/wlandutservice
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/macloader
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/mfgloader
+chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/nv_hciattach
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/wl
 
 # OMX shared libs
@@ -158,38 +161,52 @@ adb pull /system/lib/libcgdrv.so ../../../vendor/$MANUFACTURER/$DEVICE/proprieta
 
 # Firmwares
 adb pull /system/etc/firmware ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware
-adb pull /system/etc/firmware/nvddk_audiofx_core.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvddk_audiofx_transport.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_aacdec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_adtsdec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_audiomixer.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_h264dec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_jpegdec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_jpegenc.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_mp2dec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_mp3dec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_mpeg4dec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_reference.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_service.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_sorensondec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_vc1dec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_wavdec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_wmadec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvmm_wmaprodec.axf ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
-adb pull /system/etc/firmware/nvrm_avp.bin ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/firmware/
+
+mkdir -p ../../../vendor/$MANUFACTURER/$DEVICE/etc
+adb pull /system/etc/pvnvomx.cfg ../../../vendor/$MANUFACTURER/$DEVICE/etc/pvnvomx.cfg
+adb pull /system/etc/pvplayer.cfg ../../../vendor/$MANUFACTURER/$DEVICE/etc/pvplayer.cfg
 
 # Other files
 adb pull /system/bin/charging_mode ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/bin/playlpm ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
+adb pull /system/lib/libQmageDecoder.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/playsound ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/immvibed_n1 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/drexe ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/bin/npsmobex ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 adb pull /system/lib/libsisodrm.so ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/charging_mode
+chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/playlpm
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/playsound
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/immvibed_n1
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/drexe
 chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/npsmobex
+
+mkdir -p ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_5.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_10.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_15.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_20.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_25.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_30.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_35.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_40.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_45.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_50.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_55.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_60.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_65.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_70.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_75.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_80.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_85.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_90.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_95.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_charging_100.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/battery_error.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+adb pull /system/media/chargingwarning.qmg ../../../vendor/$MANUFACTURER/$DEVICE/lpm
+
+# fi
 
 (cat << EOF) | sed s/__DEVICE__/$DEVICE/g | sed s/__MANUFACTURER__/$MANUFACTURER/g > ../../../vendor/$MANUFACTURER/$DEVICE/$DEVICE-vendor-blobs.mk
 # Copyright (C) 2012 The CyanogenMod Project
@@ -210,8 +227,8 @@ chmod 755 ../../../vendor/$MANUFACTURER/$DEVICE/proprietary/npsmobex
 
 # Prebuilt libraries that are needed to build open-source libraries
 PRODUCT_COPY_FILES := \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libril.so:obj/lib/libril.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsecril-client.so:obj/lib/libsecril-client.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libcamera.so:obj/lib/libcamera.so
 
 # HAL
 PRODUCT_COPY_FILES += \\
@@ -227,10 +244,9 @@ PRODUCT_COPY_FILES += \\
 
 # RIL files
 PRODUCT_COPY_FILES += \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libril.so:obj/lib/libril.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libril.so:system/lib/libril.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsec-ril.so:system/lib/libsec-ril.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsecril-client.so:system/lib/libsecril-client.so
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsecril-client.so:system/lib/libsecril-client.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libril.so:system/lib/libril.so \\
 
 # CAMERA
 PRODUCT_COPY_FILES += \\
@@ -238,11 +254,12 @@ PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libarccamera.so:system/lib/libarccamera.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libcaps.so:system/lib/libcaps.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libPanoraMax3.so:system/lib/libPanoraMax3.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libseccamera.so:system/lib/libseccamera.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libseccameraadaptor.so:system/lib/libseccameraadaptor.so \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libcamera.so:system/lib/libcamera.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libcamera.so:obj/lib/libsamsungcamera.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libcamera.so:system/lib/libsamsungcamera.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libcamera_client.so:system/lib/libcamera_client.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libcameraservice.so:system/lib/libcameraservice.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libseccamera.so:system/lib/libseccamera.so \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libseccameraadaptor.so:system/lib/libseccameraadaptor.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsecjpeginterface.so:system/lib/libsecjpeginterface.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsecjpegboard.so:system/lib/libsecjpegboard.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsecjpegarcsoft.so:system/lib/libsecjpegarcsoft.so \\
@@ -281,11 +298,10 @@ PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bcm4330_mfg.bin:system/etc/wifi/bcm4330_mfg.bin \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/bcm4330_sta.bin:system/etc/wifi/bcm4330_sta.bin \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_mfg.txt:system/etc/wifi/nvram_mfg.txt \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_mfg.txt_murata:system/etc/wifi/nvram_mfg.txt_murata \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_net.txt:system/etc/wifi/nvram_net.txt \\
-    vendor/__MANUFACTURER__/__DEVICE__/proprietary/nvram_net.txt_murata:system/etc/wifi/nvram_net.txt_murata \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/macloader:system/bin/macloader \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/mfgloader:system/bin/mfgloader \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/nv_hciattach:system/bin/nv_hciattach \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/wl:system/etc/wifi/wl \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/btld:system/bin/btld \\
 
@@ -349,6 +365,7 @@ PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/firmware/nvmm_h264dec.axf:system/etc/firmware/nvmm_h264dec.axf \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/firmware/nvmm_jpegdec.axf:system/etc/firmware/nvmm_jpegdec.axf \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/firmware/nvmm_jpegenc.axf:system/etc/firmware/nvmm_jpegenc.axf \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/firmware/nvmm_manager.axf:system/etc/firmware/nvmm_manager.axf \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/firmware/nvmm_mp2dec.axf:system/etc/firmware/nvmm_mp2dec.axf \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/firmware/nvmm_mp3dec.axf:system/etc/firmware/nvmm_mp3dec.axf \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/firmware/nvmm_mpeg4dec.axf:system/etc/firmware/nvmm_mpeg4dec.axf \\
@@ -361,14 +378,44 @@ PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/firmware/nvmm_wmaprodec.axf:system/etc/firmware/nvmm_wmaprodec.axf \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/firmware/nvrm_avp.bin:system/etc/firmware/nvrm_avp.bin
 
+PRODUCT_COPY_FILES += \\
+    vendor/__MANUFACTURER__/__DEVICE__/etc/pvnvomx.cfg:system/etc/pvnvomx.cfg \\
+    vendor/__MANUFACTURER__/__DEVICE__/etc/pvplayer.cfg:system/etc/pvplayer.cfg
+
 # Other files
 PRODUCT_COPY_FILES += \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/charging_mode:system/bin/charging_mode \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/playlpm:system/bin/playlpm \\
+    vendor/__MANUFACTURER__/__DEVICE__/proprietary/libQmageDecoder.so:system/lib/libQmageDecoder.so \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/playsound:system/bin/playsound \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/immvibed_n1:system/bin/immvibed_n1 \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/drexe:system/bin/drexe \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/npsmobex:system/bin/npsmobex \\
     vendor/__MANUFACTURER__/__DEVICE__/proprietary/libsisodrm.so:system/lib/libsisodrm.so
+
+PRODUCT_COPY_FILES += \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_5.qmg:system/media/battery_charging_5.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_10.qmg:system/media/battery_charging_10.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_15.qmg:system/media/battery_charging_15.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_20.qmg:system/media/battery_charging_30.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_25.qmg:system/media/battery_charging_25.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_30.qmg:system/media/battery_charging_30.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_35.qmg:system/media/battery_charging_35.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_40.qmg:system/media/battery_charging_40.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_45.qmg:system/media/battery_charging_45.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_50.qmg:system/media/battery_charging_50.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_55.qmg:system/media/battery_charging_55.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_60.qmg:system/media/battery_charging_60.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_65.qmg:system/media/battery_charging_65.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_70.qmg:system/media/battery_charging_70.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_75.qmg:system/media/battery_charging_75.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_85.qmg:system/media/battery_charging_85.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_90.qmg:system/media/battery_charging_90.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_95.qmg:system/media/battery_charging_95.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_charging_100.qmg:system/media/battery_charging_100.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/battery_error.qmg:system/media/battery_error.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/chargingwarning.qmg:system/media/chargingwarning.qmg \\
+    vendor/__MANUFACTURER__/__DEVICE__/lpm/Disconnected.qmg:system/media/Disconnected.qmg \\
 
 EOF
 
