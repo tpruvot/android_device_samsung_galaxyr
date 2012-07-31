@@ -68,10 +68,15 @@ PRODUCT_PACKAGES += \
     gralloc.tegra \
     overlay.tegra
 
-# Other cmdline tools
+# BT cmdline tools
 PRODUCT_PACKAGES += \
     bdaddr_read \
-
+    bccmd \
+    sdptool \
+    hciattach \
+    hciconfig \
+    hcitool \
+    avinfo \
 
 PRODUCT_PACKAGES += RomUpdater DroidSSHd
 
@@ -80,8 +85,10 @@ DISABLE_DEXPREOPT := false
 
 # INIT-scripts
 PRODUCT_COPY_FILES += \
+    device/samsung/galaxyr/lpm.rc:root/lpm.rc \
     device/samsung/galaxyr/init.n1.rc:root/init.n1.rc \
-    device/samsung/galaxyr/ueventd.n1.rc:root/ueventd.n1.rc
+    device/samsung/galaxyr/ueventd.n1.rc:root/ueventd.n1.rc \
+    device/samsung/galaxyr/scripts/lpm_boot_check.sh:system/bin/lpm_boot_check.sh \
 
 # debug purpose...
 ifeq ($(TARGET_PROVIDES_INIT_RC),true)
@@ -94,6 +101,8 @@ PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/prebuilt/bthid.ko:root/lib/modules/bthid.ko \
     device/samsung/galaxyr/prebuilt/scsi_wait_scan.ko:root/lib/modules/scsi_wait_scan.ko \
     device/samsung/galaxyr/prebuilt/Si4709_driver.ko:root/lib/modules/Si4709_driver.ko \
+    device/samsung/galaxyr/prebuilt/symsearch.ko:root/lib/modules/symsearch.ko \
+    device/samsung/galaxyr/prebuilt/klogger.ko:root/lib/modules/klogger.ko \
     device/samsung/galaxyr/prebuilt/modules.dep:root/lib/modules/modules.dep
 
 # Vold and Storage
@@ -124,6 +133,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/usr/keylayout/AVRCP.kl:system/usr/keylayout/AVRCP.kl \
     device/samsung/galaxyr/usr/keylayout/Broadcom_Bluetooth_HID.kl:system/usr/keylayout/Broadcom_Bluetooth_HID.kl \
+    device/samsung/galaxyr/usr/keylayout/Logitech_USB_Receiver.kl:system/usr/keylayout/Logitech_USB_Receiver.kl \
     device/samsung/galaxyr/usr/keylayout/qwerty.kl:system/usr/keylayout/qwerty.kl \
     device/samsung/galaxyr/usr/keylayout/sec_jack.kl:system/usr/keylayout/sec_jack.kl \
     device/samsung/galaxyr/usr/keylayout/sec_key.kl:system/usr/keylayout/sec_key.kl \
@@ -132,6 +142,7 @@ PRODUCT_COPY_FILES += \
 # Keychars
 PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/usr/keychars/Broadcom_Bluetooth_HID.kcm.bin:system/usr/keychars/Broadcom_Bluetooth_HID.kcm.bin \
+    device/samsung/galaxyr/usr/keychars/Logitech_USB_Receiver.kcm.bin:system/usr/keychars/Logitech_USB_Receiver.kcm.bin \
     device/samsung/galaxyr/usr/keychars/qwerty2.kcm.bin:system/usr/keychars/qwerty2.kcm.bin \
     device/samsung/galaxyr/usr/keychars/qwerty.kcm.bin:system/usr/keychars/qwerty.kcm.bin \
     device/samsung/galaxyr/usr/keychars/sec_jack.kcm.bin:system/usr/keychars/sec_jack.kcm.bin \

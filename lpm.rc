@@ -21,7 +21,10 @@ on init
     mkdir /mnt 0775 root root
 
 on fs
-    mount tmpfs tmpfs /tmp mode=0755
+    mkdir /tmp 0777 system nobody
+    mount ramfs ramfs /tmp
+    chown system nobody /tmp
+    chmod 0777 /tmp
 
     mount ext4 /dev/block/mmcblk0p2 /system wait
 
@@ -40,26 +43,28 @@ on boot
     hostname localhost
     domainname localdomain
 
+    exec /system/bin/lpm_boot_check.sh
+
     class_start default
 
 service debuggerd /system/bin/debuggerd
 
 service ueventd /sbin/ueventd
-    	critical
+    critical
 
-#service console /bin/sh
 service console /system/bin/sh
-	console
+    console
 
 service playlpm /system/bin/playlpm
-    	user root
-	oneshot
+    class charger
+    user root
+    oneshot
 
 service immvibed /system/bin/immvibed 
-	oneshot
+    oneshot
 
 service lpmkey /system/bin/charging_mode
-    	user root
+    user root
 
 # adbd is controlled by the persist.service.adb.enable system property
 service adbd /sbin/adbd
@@ -74,4 +79,9 @@ on property:persist.service.adb.enable=1
 
 on property:persist.service.adb.enable=0
     stop adbd
+
+on property:sys.chargeonly.mode=1
+    class_reset main
+    class_reset late_start
+    class_start charger
 

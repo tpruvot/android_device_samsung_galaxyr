@@ -1,3 +1,5 @@
+import lpm.rc
+
 on early-init
 
     export PHONE_STORAGE /mnt/emmc
@@ -26,7 +28,7 @@ on init
 
     # kernel modules
     insmod /lib/modules/Si4709_driver.ko
-#    insmod /lib/modules/bthid.ko
+    insmod /lib/modules/bthid.ko
 
     # temporary debug modules
     insmod /lib/modules/symsearch.ko
@@ -417,11 +419,10 @@ service bt_dut_cmd /system/bin/bcm_dut
     disabled
     oneshot
 
-# triggered by holding down both volume keys + power
-# doesnt work yet... even with keychord kernel support
+# triggered by holding down both volume keys + home
 service reboot_key /system/bin/toolbox reboot
     oneshot
-    keycodes 114 115 107
+    keycodes 114 115 116
     disabled
 
 ##############################################################################
@@ -431,15 +432,20 @@ service reboot_key /system/bin/toolbox reboot
 # Samsung USB Mode : system properties are linked with sysfs
 # write /sys/class/sec/switch/UsbMenuSel 0
 on property:persist.service.usb.setting=0
-	write /sys/devices/platform/android_usb/UsbMenuSel 0
+    # KIES (ACM_MTP)
+    write /sys/devices/platform/android_usb/UsbMenuSel 0
 on property:persist.service.usb.setting=1
-	write /sys/devices/platform/android_usb/UsbMenuSel 1
+    # MTP
+    write /sys/devices/platform/android_usb/UsbMenuSel 1
 on property:persist.service.usb.setting=2
-	write /sys/devices/platform/android_usb/UsbMenuSel 2
+    # UMS
+    write /sys/devices/platform/android_usb/UsbMenuSel 2
 on property:persist.service.usb.setting=3
-	write /sys/devices/platform/android_usb/UsbMenuSel 3
+    # ASKON
+    write /sys/devices/platform/android_usb/UsbMenuSel 3
 on property:persist.service.usb.setting=4
-	write /sys/devices/platform/android_usb/UsbMenuSel 4
+    # ACCESSORY
+    write /sys/devices/platform/android_usb/UsbMenuSel 4
 	
 # Power management settings
 on property:sys.boot_completed=1
