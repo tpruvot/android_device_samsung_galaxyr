@@ -419,7 +419,7 @@ service bt_dut_cmd /system/bin/bcm_dut
     disabled
     oneshot
 
-# triggered by holding down both volume keys + home
+# triggered by holding down both volume keys + power
 service reboot_key /system/bin/toolbox reboot
     oneshot
     keycodes 114 115 116
