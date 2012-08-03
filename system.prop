@@ -4,15 +4,27 @@
 
 ro.sf.lcd_density=240
 
-rild.libpath=/system/lib/libsec-ril.so
-rild.libargs=-d /dev/ttyS0
-ro.kernel.android.ril=yes
-ro.telephony.ril_class=samsung
-
 dalvik.vm.heapsize=64m
 
-#Define TCP buffer sizes for various networks
-#ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
+# RIL
+rild.libpath=/system/lib/libsec-ril.so
+rild.libargs=-d /dev/ttyS0
+
+ro.telephony.ril_class=samsung
+ro.ril.enable.3g.prefix=1
+ro.ril.enable.a53=1
+ro.ril.enable.dtm=1
+ro.ril.enable.managed.roaming=1
+ro.ril.gprsclass=12
+ro.ril.hep=1
+ro.ril.hsdpa.category=8
+ro.ril.hsupa.category=5
+ro.ril.hsxpa=2
+
+ro.kernel.android.ril=yes
+
+# Define TCP buffer sizes for various networks
+# ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
 net.tcp.buffersize.default=131072,262144,524288,4096,16384,147456
 net.tcp.buffersize.wifi=131072,262144,524288,4096,16384,147456
 net.tcp.buffersize.hspa=131072,262144,524288,4096,16384,147456
@@ -38,6 +50,9 @@ mobiledata.interfaces=rmnet0
 # This only affects the case in which there are remembered access points,
 # but none are in range.
 wifi.supplicant_scan_interval=30
+
+# File with AOSP format of the bt mac address
+ro.bt.bdaddr_path=/efs/imei/btaddr.mac
 
 #OpenGL ES version
 ro.opengles.version = 131072

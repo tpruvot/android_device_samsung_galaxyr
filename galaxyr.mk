@@ -182,21 +182,6 @@ PRODUCT_COPY_FILES += \
 # Overlay to set device specific parameters
 DEVICE_PACKAGE_OVERLAYS := device/samsung/galaxyr/overlay
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.ril.enable.3g.prefix=1 \
-    ro.ril.enable.a53=1 \
-    ro.ril.enable.dtm=1 \
-    ro.ril.enable.managed.roaming=1 \
-    ro.ril.gprsclass=12 \
-    ro.ril.hep=1 \
-    ro.ril.hsdpa.category=8 \
-    ro.ril.hsupa.category=5 \
-    ro.ril.hsxpa=2 \
-    ro.kernel.android.ril=yes \
-    ro.telephony.ril_class=samsung \
-    rild.libpath=/system/lib/libsec-ril.so \
-    rild.libargs="-d /dev/ttyS0"
-
 # The OpenGL ES API level that is natively supported by this device.
 # This is a 16.16 fixed point number
 PRODUCT_PROPERTY_OVERRIDES += \
