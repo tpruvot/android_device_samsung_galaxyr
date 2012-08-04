@@ -1,3 +1,5 @@
+loglevel 8
+
 import lpm.rc
 
 on early-init
@@ -20,19 +22,16 @@ on init
     chown system nobody /tmp
 
     write /sys/class/firmware/timeout 5
-    write /sys/class/usb_composite/usb_mass_storage/enable 0
+    # write /sys/class/usb_composite/usb_mass_storage/enable 0
 
     mkdir /efs 0771 system system
 
     write /sys/block/mmcblk0/queue/iosched/slice_idle 0
 
     # kernel modules
-    insmod /lib/modules/Si4709_driver.ko
-    insmod /lib/modules/bthid.ko
-
-    # temporary debug modules
     insmod /lib/modules/symsearch.ko
     insmod /lib/modules/klogger.ko
+    insmod /lib/modules/bthid.ko
 
 on fs
     # SEC_DMCRYPT move mounting efs before mounting data and apply_disk_policy
@@ -83,7 +82,7 @@ on boot
     setprop softap.interface wl0.1
     setprop wifi.ap.interface wl0.1
 
-    # setprop service.adb.root 1
+    setprop service.adb.root 1
 
     # required to start the ril
     chown radio radio /sys/devices/platform/tegra-ehci.1/ehci_power
@@ -152,8 +151,13 @@ on boot
     chown bluetooth bluetooth /sys/class/rfkill/rfkill2/type
     chmod 6755 /system/bin/bcm_dut
 
-    # bluetooth MAC address programming (set ro.bt.bdaddr_path)
+    # bluetooth MAC address programming
     exec /system/bin/bdaddr_read
+    setprop ro.bt.bdaddr_path "/efs/imei/btaddr.mac"
+    chown system bluetooth /efs/imei/btaddr.mac
+
+    # load it late, after audio/wifi init
+    insmod /lib/modules/Si4709_driver.ko
 
     # UART/USB path switching
     chown system radio /sys/devices/platform/i2c-gpio.11/i2c-11/11-0025/uartsel
@@ -318,6 +322,10 @@ on boot
     # relock the rootfs
     mount rootfs rootfs / ro remount
 
+    write /sys/kernel/mm/ksm/sleep_millisecs 1400
+    write /sys/kernel/mm/ksm/pages_to_scan 200
+    write /sys/kernel/mm/ksm/run 1
+
 ##############################################################################
 # SERVICES
 ##############################################################################
@@ -376,33 +384,32 @@ service audiotunemode /system/bin/audiotunemode
     oneshot
 
 # Bluetooth
-service btld /system/bin/logwrapper /system/bin/btld -hb 3000000 -hp /dev/ttyHS2 -lpm 1
-    user root
-    group bluetooth net_bt_admin net_admin inet net_raw
-    disabled
-    oneshot
-
-#service map /system/bin/sdptool add --channel=16 MAS
+#service hciattach /system/bin/hciattach -n -t 10 /dev/ttyHS2 any 3000000 flow
 #    user bluetooth
-#    group bluetooth net_bt_admin
+#    group system bluetooth net_bt_admin
 #    disabled
-#    oneshot
 
 service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --baudrate 3000000 \
     --patchram /system/etc/bluetooth/BCM4330B1_002.001.003.0221.0263.hcd /dev/ttyHS2
-#   user bluetooth
-    group bluetooth net_bt_admin inet net_raw net_admin
+    user bluetooth
+    group system bluetooth net_bt_admin
+    disabled
+
+service btld /system/bin/logwrapper /system/xbin/strace /system/bin/btld -hb 3000000 -hp /dev/ttyHS2 -lpm 1
+    user root
+    group system bluetooth net_bt_admin net_admin inet net_raw
     disabled
     oneshot
 
 # start btld if soft_onoff is enabled
 on property:service.brcm.bt.soft_onoff=1
-#   start btld
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill2/state
+    start btld
     start hciattach
 
 # stop btld if soft_onoff is disabled
 on property:service.brcm.bt.soft_onoff=0
-#   stop btld
+    stop btld
     stop hciattach
 
 service DR-deamon /system/bin/drexe
@@ -415,7 +422,7 @@ service mobex-daemon /system/bin/npsmobex
 
 # HCI_ENABLE_BT_DEV_UNDER_TEST_MODE
 service bt_dut_cmd /system/bin/bcm_dut
-    group bluetooth net_bt_admin
+    group system bluetooth net_bt_admin
     disabled
     oneshot
 
@@ -466,39 +473,26 @@ on property:encryption.bootmode=remount
     stop immvibed
     stop zygote
 
-    # do not add here, "on property" tag area
-
-    # verfiy filesystem (UMS)
-    #exec apply_system_policy /dev/block/mmcblk0p4 vfat -r 1980
-
     mount ext4 /dev/block/mmcblk0p6 /data nosuid nodev noatime wait usedm discard,noauto_da_alloc
-    # do not add here, "on property" tag area
     chown system system /data
     chmod 0771 /data
-    # do not add here, "on property" tag area
     # We chown/chmod /data again so because mount is run as root + defaults
     chown system system /data
     chmod 0771 /data
-    # do not add here, "on property" tag area
     # Create dump dir and collect dumps.
     # Do this before we mount cache so eventually we can use cache for
     # storing dumps on platforms which do not have a dedicated dump partition.
-    # do not add here, "on property" tag area
     mkdir /data/dontpanic
     chown root log /data/dontpanic
     chmod 0750 /data/dontpanic
-    # do not add here, "on property" tag area
     # Collect apanic data, free resources and re-arm trigger
     copy /proc/apanic_console /data/dontpanic/apanic_console
     chown root log /data/dontpanic/apanic_console
     chmod 0640 /data/dontpanic/apanic_console
-    # do not add here, "on property" tag area
     copy /proc/apanic_threads /data/dontpanic/apanic_threads
     chown root log /data/dontpanic/apanic_threads
     chmod 0640 /data/dontpanic/apanic_threads
-    # do not add here, "on property" tag area
     write /proc/apanic_console 1
-    # do not add here, "on property" tag area
 
     # create basic filesystem structure
     mkdir /data/misc 01771 system misc
@@ -519,29 +513,25 @@ on property:encryption.bootmode=remount
     mkdir /data/app-private 0771 system system
     mkdir /data/app 0771 system system
     mkdir /data/property 0700 root root
-    # do not add here, "on property" tag area
     # create log system
     mkdir /data/log 0775 system log
     chown system log /data/log
-    # do not add here, "on property" tag area
     chmod 0775 /data/log
     chmod 0775 /data/anr
-    # do not add here, "on property" tag area
     # create dalvik-cache and double-check the perms
     mkdir /data/dalvik-cache 0771 system system
     chown system system /data/dalvik-cache
     chmod 0771 /data/dalvik-cache
-    # do not add here, "on property" tag area
     # create the lost+found directories, so as to enforce our permissions
     mkdir /data/lost+found 0770
-    # do not add here, "on property" tag area
     # double check the perms, in case lost+found already exists, and set owner
     chown root root /data/lost+found
     chmod 0770 /data/lost+found
+
     # do not add here, "on property" tag area
 
     # b2b_lab_securitypart_2011.7.10 reload properties for ODE
-    exec reload_data_partition_properties
+    # exec reload_data_partition_properties
 
     start zygote
     start immvibed

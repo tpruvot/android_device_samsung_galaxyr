@@ -96,11 +96,12 @@ ifeq ($(TARGET_PROVIDES_INIT_RC),true)
 endif
 
 # Prebuilt modules
+#     device/samsung/galaxyr/prebuilt/Si4709_driver.ko:root/lib/modules/Si4709_driver.ko \
+
 PRODUCT_COPY_FILES += \
     device/samsung/galaxyr/prebuilt/dhd.ko:root/lib/modules/dhd.ko \
     device/samsung/galaxyr/prebuilt/bthid.ko:root/lib/modules/bthid.ko \
     device/samsung/galaxyr/prebuilt/scsi_wait_scan.ko:root/lib/modules/scsi_wait_scan.ko \
-    device/samsung/galaxyr/prebuilt/Si4709_driver.ko:root/lib/modules/Si4709_driver.ko \
     device/samsung/galaxyr/prebuilt/symsearch.ko:root/lib/modules/symsearch.ko \
     device/samsung/galaxyr/prebuilt/klogger.ko:root/lib/modules/klogger.ko \
     device/samsung/galaxyr/prebuilt/modules.dep:root/lib/modules/modules.dep

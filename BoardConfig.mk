@@ -40,7 +40,14 @@ BOARD_NAND_PAGE_SIZE := 4096
 BOARD_NAND_SPARE_SIZE := 128
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_BASE := 0x10000000
-BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false lpm_boot=0 tegra_fbmem=800K@0x18012000 video=tegrafb console=ram usbcore.old_scheme_first=1 lp0_vec=8192@0x1819E000 emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt
+
+BOARD_KERNEL_CMDLINE := mem=511M@0M secmem=1M@511M mem=512M@512M vmalloc=256M fota_boot=false video=tegrafb console=ram usbcore.old_scheme_first=1 emmc_checksum_done=true emmc_checksum_pass=true tegraboot=sdmmc gpt 
+
+# still required for apanic_mmc, todo: should check the gpt partition labels
+BOARD_KERNEL_CMDLINE += mmcparts=mmcblk0:p1(EFS),p2(APP),p3(CAC),p4(IMS),p5(MSC),p6(UDA),p7(MDM),p8(SOS),p9(LNX),p10(OTA),p11(HID);
+
+# no more required with tegra atag's patch (from bootloader)
+# BOARD_KERNEL_CMDLINE += tegra_fbmem=800K@0x18012000 lp0_vec=8192@0x1819E000
 
 # kernel modules location (busybox)
 KERNEL_MODULES_DIR := /lib/modules
@@ -104,9 +111,11 @@ BOARD_FORCE_STATIC_A2DP := true
 #BOARD_CUSTOM_BLUEDROID := ../../../device/samsung/galaxyr/bluetooth.c
 #BOARD_HAVE_BLUETOOTH_CSR := true
 BOARD_HAVE_BLUETOOTH_BCM_BTLA := true
+BOARD_HAVE_BLUETOOTH_BCM_SEMC := true
 BT_ALT_STACK := true
 BRCM_BT_USE_BTL_IF := true
 BRCM_BTL_INCLUDE_A2DP := true
+BOARD_HAS_EXTRA_SYS_PROPS := true
 
 # FM Radio
 BOARD_HAVE_FM_RADIO := true
@@ -164,8 +173,8 @@ BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/galaxyr/recovery/graphics.c
 BOARD_USE_USB_MASS_STORAGE_SWITCH := true
 BOARD_UMS_LUNFILE := "/sys/devices/platform/usb_mass_storage/lun0/file"
 BOARD_USES_MMCUTILS := true
-BOARD_HAS_NO_MISC_PARTITION := true
-BOARD_HAS_NO_SELECT_BUTTON := true
+#BOARD_HAS_NO_MISC_PARTITION := true
+#BOARD_HAS_NO_SELECT_BUTTON := true
 
 # Use this flag if the board has a ext4 partition larger than 2gb
 BOARD_HAS_LARGE_FILESYSTEM := true
