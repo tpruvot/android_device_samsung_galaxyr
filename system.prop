@@ -85,6 +85,9 @@ ro.vold.switchablepair=/mnt/sdcard,/mnt/emmc
 # Mount the internal SD card, too
 ro.additionalmounts=/mnt/emmc
 
+# Custom keyboard layouts (otg)
+# persist.sys.keypad_type=azerty
+
 #
 # ADDITIONAL_DEFAULT_PROPERTIES
 #
