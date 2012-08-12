@@ -1,6 +1,6 @@
 loglevel 8
 
-import lpm.rc
+# import lpm.rc
 
 on early-init
 
@@ -22,11 +22,11 @@ on init
     chown system nobody /tmp
 
     write /sys/class/firmware/timeout 5
-    # write /sys/class/usb_composite/usb_mass_storage/enable 0
+    write /sys/class/usb_composite/usb_mass_storage/enable 0
 
     mkdir /efs 0771 system system
 
-    write /sys/block/mmcblk0/queue/iosched/slice_idle 0
+    #write /sys/block/mmcblk0/queue/iosched/slice_idle 0
 
     # kernel modules
     insmod /lib/modules/symsearch.ko
@@ -51,9 +51,6 @@ on fs
     exec check_filesystem /dev/block/mmcblk0p6 ext4
     mount ext4 /dev/block/mmcblk0p6 /data nosuid nodev noatime wait crypt discard,noauto_da_alloc
     mount ext4 /dev/block/mmcblk0p3 /cache nosuid nodev noatime wait
-
-    # add booting sound property
-    # setprop audioflinger.bootsnd 1
 
 on post-fs
 
@@ -218,21 +215,22 @@ on boot
     chmod 0666 /dev/nvhost-vi
 
     # Power management settings
-    # write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 216000
-    # write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1000000
-    # write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
-    # write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 216000
-    # write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 1000000
-    # write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor interactive
-    # write /sys/devices/system/cpu/cpufreq/interactive/go_maxspeed_load 80
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor interactive
+    write /sys/devices/system/cpu/cpufreq/interactive/go_maxspeed_load 80
 
-    # permissions for MTP device node_temporary permission_will be changed 0660
-    chmod 0666 /dev/usb_mtp_gadget
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 234000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1040000
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 234000
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 1040000
+
+    # permissions for MTP device
+    chmod 0664 /dev/usb_mtp_gadget
     chown system system /dev/usb_mtp_gadget
 
-    # permissions for USB Accessory device(ADK) node_temporary permission_will be changed 0660
+    # permissions for USB Accessory device(ADK)
     chown root usb /dev/usb_accessory
-    chmod 0660 /dev/usb_accessory
+    chmod 0664 /dev/usb_accessory
 
     chown root system /sys/devices/virtual/usb_composite/accessory/enable
     chmod 0664 /sys/devices/virtual/usb_composite/accessory/enable
@@ -324,7 +322,7 @@ on boot
 
     write /sys/kernel/mm/ksm/sleep_millisecs 1400
     write /sys/kernel/mm/ksm/pages_to_scan 200
-    write /sys/kernel/mm/ksm/run 1
+    # write /sys/kernel/mm/ksm/run 1
 
 ##############################################################################
 # SERVICES
@@ -387,23 +385,24 @@ service audiotunemode /system/bin/audiotunemode
 #service hciattach /system/bin/hciattach -n -t 10 /dev/ttyHS2 any 3000000 flow
 #    user bluetooth
 #    group system bluetooth net_bt_admin
+#    setprop service.brcm.bt.soft_onoff 1
 #    disabled
+#    oneshot
 
-service hciattach /system/bin/brcm_patchram_plus --enable_hci --enable_lpm --baudrate 3000000 \
-    --patchram /system/etc/bluetooth/BCM4330B1_002.001.003.0221.0263.hcd /dev/ttyHS2
-    user bluetooth
-    group system bluetooth net_bt_admin
+service hciattach /system/bin/logwrapper /system/bin/brcm_patchram_plus -d --enable_lpm \
+    --patchram /system/etc/bluetooth/BCM4330B1_002.001.003.0221.0263.hcd --baudrate 3000000 /dev/ttyHS2
+#   user bluetooth
+    group system bluetooth net_bt_admin net_admin radio inet
     disabled
+    oneshot
 
-service btld /system/bin/logwrapper /system/xbin/strace /system/bin/btld -hb 3000000 -hp /dev/ttyHS2 -lpm 1
-    user root
+service btld /system/bin/logwrapper /system/bin/btld -hb 3000000 -hp /dev/ttyHS2 -lpm 1
     group system bluetooth net_bt_admin net_admin inet net_raw
     disabled
     oneshot
 
 # start btld if soft_onoff is enabled
 on property:service.brcm.bt.soft_onoff=1
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill2/state
     start btld
     start hciattach
 
@@ -412,9 +411,11 @@ on property:service.brcm.bt.soft_onoff=0
     stop btld
     stop hciattach
 
+# what is that ?
 service DR-deamon /system/bin/drexe
     user root
     group system radio inet net_raw
+    disabled
 
 service mobex-daemon /system/bin/npsmobex
     user system
@@ -454,17 +455,15 @@ on property:persist.service.usb.setting=4
     # ACCESSORY
     write /sys/devices/platform/android_usb/UsbMenuSel 4
 	
-# Power management settings
-on property:sys.boot_completed=1
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 216000
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1000000
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 216000
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 1000000
-    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor interactive
-    write /sys/devices/system/cpu/cpufreq/interactive/go_maxspeed_load 80
-
-
+# Power management settings, let cm settings for that...
+#on property:sys.boot_completed=1
+#    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 216000
+#    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 1000000
+#    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+#    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 216000
+#    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq 1000000
+#    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor interactive
+#    write /sys/devices/system/cpu/cpufreq/interactive/go_maxspeed_load 80
 
 on property:encryption.bootmode=remount
     stop mobex-daemon
