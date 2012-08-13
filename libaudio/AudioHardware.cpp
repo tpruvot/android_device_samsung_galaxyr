@@ -1,5 +1,5 @@
 /*
-** Copyright 2010, The Android Open-Source Project
+** Copyright 2012, The Android Open-Source Project
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -42,7 +42,9 @@ extern "C" {
 
 #ifdef HAVE_FM_RADIO
 #define Si4709_IOC_MAGIC  0xFA
-#define Si4709_IOC_VOLUME_SET                       _IOW(Si4709_IOC_MAGIC, 15, __u8)
+#define Si4709_IOC_POWERUP                  _IO(Si4709_IOC_MAGIC, 0)
+#define Si4709_IOC_POWERDOWN                _IO(Si4709_IOC_MAGIC, 1)
+#define Si4709_IOC_VOLUME_SET               _IOW(Si4709_IOC_MAGIC, 15, __u8)
 #endif
 
 namespace android {
@@ -787,6 +789,10 @@ status_t AudioHardware::setFmVolume(float v)
         __u8 fmVolume = (AudioSystem::logToLinear(v) + 5); /// 7;
         LOGD("%s %f %d", __func__, v, (int) fmVolume);
         ret = ioctl(mFmFd, Si4709_IOC_VOLUME_SET, &fmVolume);
+        if (ret == -1) {
+            LOGW("set_volume_fm: device is not ready");
+            return NO_ERROR;
+        }
         if (ret < 0) {
             LOGE("set_volume_fm error. ret=%d", ret);
             return -EIO;
@@ -799,6 +805,7 @@ status_t AudioHardware::setFmVolume(float v)
 }
 
 void AudioHardware::enableFMRadio() {
+    int ret = 0;
     LOGV("AudioHardware::enableFMRadio() Turning FM Radio ON");
 
     if (mMode == AudioSystem::MODE_IN_CALL) {
@@ -817,6 +824,15 @@ void AudioHardware::enableFMRadio() {
 
         if (mFmFd < 0) {
             mFmFd = open("/dev/fmradio", O_RDWR);
+            if (mFmFd < 0) {
+                LOGE("%s: Unable to open /dev/fmradio", __FUNCTION__);
+                return;
+            }
+            ret = ioctl(mFmFd, Si4709_IOC_POWERUP, NULL);
+            if (ret < 0) {
+                LOGE("%s: Unable to power the fm radio, ret=%d", __FUNCTION__, ret);
+                return;
+            }
             // In case setFmVolume was called before FM was enabled, we save the volume and call it here.
             setFmVolume(mFmVolume);
         }
@@ -845,6 +861,10 @@ void AudioHardware::disableFMRadio() {
     }
 
     if (mFmFd > 0) {
+	int ret = ioctl(mFmFd, Si4709_IOC_POWERDOWN, NULL);
+        if (ret < 0) {
+            LOGW("%s: Unable to power down the fm chip, ret=%d", __FUNCTION__, ret);
+        }
         close(mFmFd);
         mFmFd = -1;
     }
