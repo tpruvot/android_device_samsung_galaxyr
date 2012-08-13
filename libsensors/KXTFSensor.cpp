@@ -53,7 +53,7 @@ KXTFSensor::KXTFSensor()
 
     if (data_fd) {
         strcpy(input_sysfs_path, "/sys/class/input/");
-        strcat(input_sysfs_path, input_name);
+        strcat(input_sysfs_path, input_name); /* eventN */
         strcat(input_sysfs_path, "/device/");
         input_sysfs_path_len = strlen(input_sysfs_path);
         enable(0, 1);
@@ -62,7 +62,7 @@ KXTFSensor::KXTFSensor()
 
 KXTFSensor::~KXTFSensor()
 {
-    LOGV(LOG_TAG "[KXTF9] " __FUNCTION__);
+    LOGV(LOG_TAG __FUNCTION__);
     if (mEnabled) {
         enable(0, 0);
     }
@@ -209,6 +209,8 @@ again:
     }
 
 #if FETCH_FULL_EVENT_BEFORE_RETURN
+    usleep(10000);
+
     /* if we didn't read a complete event, see if we can fill and
        try again instead of returning with nothing and redoing poll. */
     if (numEventReceived == 0 && mEnabled == 1 && --timeout) {

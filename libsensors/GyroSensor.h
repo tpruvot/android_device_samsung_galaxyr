@@ -38,10 +38,13 @@ class GyroSensor : public SensorBase {
     char input_sysfs_path[PATH_MAX];
     int input_sysfs_path_len;
     int64_t mEnabledTime;
+    int64_t mDelay_ns;
+    bool mInitialTestDone;
 
     int setInitialState();
 protected:
     int sec_power(int en);
+    int sec_runtest();
 
 public:
             GyroSensor();

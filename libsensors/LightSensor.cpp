@@ -47,7 +47,7 @@ LightSensor::LightSensor()
 
     if (data_fd) {
         strcpy(input_sysfs_path, "/sys/class/input/");
-        strcat(input_sysfs_path, input_name);
+        strcat(input_sysfs_path, input_name); /* eventN */
         strcat(input_sysfs_path, "/device/");
         input_sysfs_path_len = strlen(input_sysfs_path);
         enable(0, 1);
